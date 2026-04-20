@@ -32,7 +32,7 @@ export default function WhyChooseUsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="flex flex-col overflow-hidden rounded-3xl bg-card border border-border shadow-lg group hover:shadow-xl transition-all duration-300"
+              className="flex flex-col overflow-hidden rounded-3xl bg-card border border-border group transition-all duration-300"
             >
               <div className="relative w-full h-64 overflow-hidden">
                 <Image 
@@ -41,7 +41,7 @@ export default function WhyChooseUsSection() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute inset-0 bg-black/40" />
                 <h3 className="absolute bottom-4 left-6 text-2xl font-bold text-white z-10">{feature.title}</h3>
               </div>
               <div className="p-6">

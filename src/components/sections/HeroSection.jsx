@@ -8,11 +8,7 @@ import { motion } from "framer-motion";
 export default function HeroSection() {
   return (
     <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 pb-12" id="home">
-      {/* Background with abstract red gradient blob */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 w-full h-[600px] bg-primary/20 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/30 blur-[80px] rounded-full -translate-x-1/3 translate-y-1/3" />
-      </div>
+      <div className="absolute inset-0 z-0 bg-background" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col lg:flex-row gap-12 items-center">
@@ -23,8 +19,8 @@ export default function HeroSection() {
             transition={{ duration: 0.8 }}
             className="w-full lg:w-1/2 space-y-8"
           >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-secondary/50 border border-primary/20 text-sm font-semibold backdrop-blur">
-              <span className="flex h-2 w-2 rounded-full bg-green-400 mr-2 animate-pulse" />
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-secondary border border-border text-sm font-semibold">
+              <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2" />
               24/7 Availability
             </div>
             
@@ -45,17 +41,15 @@ export default function HeroSection() {
               </li>
             </ul>
 
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-2 border-border/50 group mt-8 bg-black">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-border group mt-8 bg-muted">
               {/* Placeholder for Video */}
-              <div className="absolute inset-0 flex items-center justify-center flex-col text-white z-10">
-                 <div className="w-16 h-16 rounded-full bg-primary/80 backdrop-blur flex items-center justify-center mb-4 cursor-pointer group-hover:scale-110 group-hover:bg-primary transition-all shadow-xl">
+              <div className="absolute inset-0 flex items-center justify-center flex-col text-foreground z-10">
+                 <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4 cursor-pointer text-primary-foreground transition-all">
                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                  </div>
-                 <p className="font-semibold text-lg tracking-wide opacity-80">Watch How It Works</p>
+                 <p className="font-semibold text-lg tracking-wide">Watch How It Works</p>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent" />
-              {/* Optional fallback image behind video placeholder */}
-              <div className="w-full h-full bg-zinc-900" />
+              <div className="w-full h-full bg-muted" />
             </div>
 
           </motion.div>

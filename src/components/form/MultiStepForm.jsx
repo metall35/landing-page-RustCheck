@@ -64,7 +64,7 @@ export default function MultiStepForm() {
   ];
 
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-2xl border-none ring-1 ring-primary/20 bg-background/95 backdrop-blur">
+    <Card className="w-full max-w-lg mx-auto border border-border bg-card">
       <CardHeader className="text-center pb-2">
         <div className="flex justify-between items-center mb-2 text-sm font-medium text-muted-foreground">
           {step > 1 ? (

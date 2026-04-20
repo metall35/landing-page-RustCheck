@@ -31,7 +31,7 @@ export default function TrustSection() {
             <div className="flex flex-col sm:flex-row gap-6 mt-8">
               {trust.stats.map((stat, index) => (
                 <div key={index} className="flex items-center p-4 bg-secondary/50 rounded-2xl border border-border flex-1">
-                  <div className="mr-4 p-3 bg-primary rounded-xl text-primary-foreground shadow-inner">
+                  <div className="mr-4 p-3 bg-primary rounded-xl text-primary-foreground">
                     {index === 0 ? <Star className="w-8 h-8 fill-current" /> : <Award className="w-8 h-8" />}
                   </div>
                   <div>
@@ -56,8 +56,7 @@ export default function TrustSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="w-full lg:w-1/2 relative"
           >
-            <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full z-0" />
-            <div className="relative z-10 w-full aspect-square md:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-border bg-black">
+            <div className="relative z-10 w-full aspect-square md:aspect-[4/3] rounded-3xl overflow-hidden border border-border bg-muted">
               <Image 
                 src="/canada_map.png"
                 alt="Canada Map Coverage"

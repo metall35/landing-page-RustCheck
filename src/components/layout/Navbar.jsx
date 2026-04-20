@@ -27,7 +27,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-background/90 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-background border-b border-border py-3" : "bg-transparent py-5"}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         
         <Link href="/" className="flex items-center">
@@ -56,7 +56,7 @@ export default function Navbar() {
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Button onClick={() => document.getElementById("home")?.scrollIntoView({ behavior: "smooth" })} className="font-bold rounded-full px-6 shadow-md hover:shadow-lg transition-shadow">
+            <Button onClick={() => document.getElementById("home")?.scrollIntoView({ behavior: "smooth" })} className="font-bold rounded-full px-6">
               Get A Quote
             </Button>
           </div>
@@ -76,7 +76,7 @@ export default function Navbar() {
 
       {/* Mobile Nav */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-background border-b shadow-lg animate-in slide-in-from-top-2">
+        <div className="md:hidden absolute top-full left-0 w-full bg-background border-b border-border animate-in slide-in-from-top-2">
           <div className="flex flex-col p-4 space-y-4">
             {navLinks.map((link) => (
               <a 
