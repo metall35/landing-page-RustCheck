@@ -1,0 +1,78 @@
+[
+  {
+    "make": "Toyota",
+    "models": ["Camry", "Corolla", "RAV4", "Highlander", "Tacoma", "Tundra"]
+  },
+  {
+    "make": "Honda",
+    "models": ["Civic", "Accord", "CR-V", "Pilot", "Odyssey", "HR-V"]
+  },
+  {
+    "make": "Ford",
+    "models": ["F-150", "Mustang", "Explorer", "Escape", "Bronco", "Edge"]
+  },
+  {
+    "make": "Chevrolet",
+    "models": ["Silverado", "Equinox", "Malibu", "Tahoe", "Colorado", "Traverse"]
+  },
+  {
+    "make": "Nissan",
+    "models": ["Altima", "Rogue", "Sentra", "Pathfinder", "Frontier", "Murano"]
+  },
+  {
+    "make": "Hyundai",
+    "models": ["Elantra", "Sonata", "Tucson", "Santa Fe", "Palisade", "Kona"]
+  },
+  {
+    "make": "Kia",
+    "models": ["Forte", "Optima", "Sportage", "Sorento", "Telluride", "Soul"]
+  },
+  {
+    "make": "Subaru",
+    "models": ["Outback", "Forester", "Crosstrek", "Impreza", "Ascent", "Legacy"]
+  },
+  {
+    "make": "Jeep",
+    "models": ["Grand Cherokee", "Wrangler", "Cherokee", "Compass", "Renegade"]
+  },
+  {
+    "make": "Ram",
+    "models": ["1500", "2500", "3500"]
+  },
+  {
+    "make": "GMC",
+    "models": ["Sierra", "Terrain", "Acadia", "Yukon"]
+  },
+  {
+    "make": "Volkswagen",
+    "models": ["Jetta", "Tiguan", "Atlas", "Golf", "Taos", "Passat"]
+  },
+  {
+    "make": "Mazda",
+    "models": ["CX-5", "Mazda3", "CX-9", "CX-30", "Mazda6"]
+  },
+  {
+    "make": "Lexus",
+    "models": ["RX", "NX", "ES", "GX", "IS", "UX"]
+  },
+  {
+    "make": "Audi",
+    "models": ["Q5", "Q7", "A4", "A6", "Q3", "A5"]
+  },
+  {
+    "make": "BMW",
+    "models": ["X3", "X5", "3 Series", "5 Series", "X7", "4 Series"]
+  },
+  {
+    "make": "Mercedes-Benz",
+    "models": ["GLC", "GLE", "C-Class", "E-Class", "GLS", "A-Class"]
+  },
+  {
+    "make": "Volvo",
+    "models": ["XC90", "XC60", "XC40", "S60"]
+  },
+  {
+    "make": "Other",
+    "models": ["Other Model"]
+  }
+]

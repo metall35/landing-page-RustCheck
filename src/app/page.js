@@ -1,21 +1,23 @@
-import Navbar from "@/components/common/Navbar";
-import Hero from "@/components/sections/Hero";
-import Coverage from "@/components/sections/Coverage";
-import Reliability from "@/components/sections/Reliability";
-import WhyChoose from "@/components/sections/WhyChoose";
-import QuoteForm from "@/components/sections/QuoteForm";
-import Testimonials from "@/components/sections/Testimonials";
+import Navbar from "@/components/layout/Navbar";
+import HeroSection from "@/components/sections/HeroSection";
+import CoverageSection from "@/components/sections/CoverageSection";
+import TrustSection from "@/components/sections/TrustSection";
+import WhyChooseUsSection from "@/components/sections/WhyChooseUsSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <main className="w-full">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/30">
       <Navbar />
-      <Hero />
-      <QuoteForm />
-      <Coverage />
-      <Reliability />
-      <WhyChoose />
-      <Testimonials />
-    </main>
+      <main>
+        <HeroSection />
+        <CoverageSection />
+        <TrustSection />
+        <WhyChooseUsSection />
+        <TestimonialsSection />
+      </main>
+      <Footer />
+    </div>
   );
 }

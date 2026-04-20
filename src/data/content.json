@@ -1,0 +1,103 @@
+{
+  "coverage": [
+    {
+      "title": "Engine & Transmission",
+      "items": [
+        "Oil pan protection",
+        "Transmission casing",
+        "Differential housing",
+        "Engine mounts"
+      ]
+    },
+    {
+      "title": "Frame & Chassis",
+      "items": [
+        "Subframes and crossmembers",
+        "Control arms",
+        "Coil spring mounts",
+        "Floor panels"
+      ]
+    },
+    {
+      "title": "Brakes & Lines",
+      "items": [
+        "Brake fluid lines",
+        "Fuel lines",
+        "Parking brake cables",
+        "ABS sensor mounts"
+      ]
+    },
+    {
+      "title": "Body Panels",
+      "items": [
+        "Rocker panels",
+        "Door bottoms",
+        "Quarter panels",
+        "Fenders"
+      ]
+    }
+  ],
+  "trust": {
+    "title": "The Nation's Most Reliable Auto Protection",
+    "description": "With a network spanning across Canada, Rust Check provides unparalleled protection against the harshest elements.",
+    "stats": [
+      {
+        "value": "4.8/5",
+        "label": "Average Rating",
+        "sublabel": "Based on 10,000+ reviews"
+      },
+      {
+        "value": "Top Rated",
+        "label": "Rust Protection",
+        "sublabel": "Voted #1 in Canada"
+      }
+    ]
+  },
+  "whyChooseUs": {
+    "title": "Why Thousands Of Drivers Trust Rust Check",
+    "features": [
+      {
+        "title": "Nationwide Coverage",
+        "description": "Drive with confidence knowing you're protected from coast to coast with our extensive network.",
+        "image": "/why_us_nationwide.png"
+      },
+      {
+        "title": "Fast, Hassle-Free Claims",
+        "description": "Our streamlined process ensures your vehicle gets the attention it needs without the typical red tape.",
+        "image": "/why_us_claims.png"
+      },
+      {
+        "title": "100% Transparent Coverage",
+        "description": "No hidden fees or surprise exclusions. You know exactly what is protected from day one.",
+        "image": "/why_us_transparent.png"
+      },
+      {
+        "title": "24/7 Roadside Assistance",
+        "description": "Peace of mind doesn't have business hours. We're here for you whenever and wherever you need us.",
+        "image": "/why_us_roadside.png"
+      }
+    ]
+  },
+  "testimonials": [
+    {
+      "name": "Michael S.",
+      "rating": 5,
+      "text": "I’ve been taking my truck here for years. The Canadian winters are brutal on the frame, but thanks to this protection plan, it still looks brand new underneath. Highly recommend!"
+    },
+    {
+      "name": "Sarah J.",
+      "rating": 5,
+      "text": "The peace of mind is worth every penny. I bought a new SUV and immediately got the protection package. The team was fast, professional, and transparent about everything."
+    },
+    {
+      "name": "David L.",
+      "rating": 5,
+      "text": "Best investment I made for my car. Resale value stays high, and I don't have to worry about salt eating away at the body panels."
+    },
+    {
+      "name": "Emily R.",
+      "rating": 4,
+      "text": "Super easy process from start to finish. The 24/7 roadside assistance feature is a fantastic bonus. Great customer service too."
+    }
+  ]
+}
