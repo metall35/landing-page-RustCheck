@@ -19,13 +19,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Coverage", href: "#coverage" },
-    { name: "Why Us", href: "#why-us" },
-    { name: "Trust", href: "#trust" },
-    { name: "Reviews", href: "#reviews" },
-  ];
-
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-background border-b border-border py-3" : "bg-transparent py-5"}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -43,17 +36,7 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8">
-          <div className="flex space-x-6">
-            {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.href}
-                className="text-sm font-semibold text-foreground/80 hover:text-primary transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
+        
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <Button onClick={() => document.getElementById("home")?.scrollIntoView({ behavior: "smooth" })} className="font-bold rounded-full px-6">

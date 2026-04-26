@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
+import QuoteSection from "@/components/sections/QuoteSection";
 import CoverageSection from "@/components/sections/CoverageSection";
 import TrustSection from "@/components/sections/TrustSection";
 import WhyChooseUsSection from "@/components/sections/WhyChooseUsSection";
@@ -12,6 +13,7 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
+        <QuoteSection />
         <CoverageSection />
         <TrustSection />
         <WhyChooseUsSection />

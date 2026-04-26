@@ -1,8 +1,6 @@
 "use client";
 
-import MultiStepForm from "@/components/form/MultiStepForm";
-import { Check, ShieldCheck, ArrowDown } from "lucide-react";
-import Image from "next/image";
+import { ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HeroSection() {
@@ -19,10 +17,6 @@ export default function HeroSection() {
             transition={{ duration: 0.8 }}
             className="w-full lg:w-1/2 space-y-8"
           >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-secondary border border-border text-sm font-semibold">
-              <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2" />
-              24/7 Availability
-            </div>
             
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
               The All-In-1 Rust Protection Plan Designed to Extend Your Vehicle's Life
@@ -41,17 +35,6 @@ export default function HeroSection() {
               </li>
             </ul>
 
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-border group mt-8 bg-muted">
-              {/* Placeholder for Video */}
-              <div className="absolute inset-0 flex items-center justify-center flex-col text-foreground z-10">
-                 <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4 cursor-pointer text-primary-foreground transition-all">
-                   <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                 </div>
-                 <p className="font-semibold text-lg tracking-wide">Watch How It Works</p>
-              </div>
-              <div className="w-full h-full bg-muted" />
-            </div>
-
           </motion.div>
 
           <motion.div 
@@ -60,12 +43,15 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full lg:w-1/2"
           >
-            <div className="lg:ml-auto lg:max-w-lg">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-foreground">See How Much It Costs To Protect Your Car</h2>
-                <ArrowDown className="w-12 h-12 mx-auto text-primary mt-4 hidden lg:block animate-bounce" />
+            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-2 border-border group bg-muted">
+              {/* Placeholder for Video */}
+              <div className="absolute inset-0 flex items-center justify-center flex-col text-foreground z-10">
+                 <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4 cursor-pointer text-primary-foreground transition-all">
+                   <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                 </div>
+                 <p className="font-semibold text-lg tracking-wide">Watch How It Works</p>
               </div>
-              <MultiStepForm />
+              <div className="w-full h-full bg-muted" />
             </div>
           </motion.div>
 
