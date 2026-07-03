@@ -6,6 +6,47 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Lock, Car, Truck, Van, Plus, Calendar, Smile, Meh, Frown, Check, X, Search, ChevronRight, ChevronLeft } from "lucide-react";
 import carsData from "@/data/cars.json";
 
+const SedanIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-3.5c0-1-.5-2-1.5-2.5L16 9H8l-4.5 2C2.5 11.5 2 12.5 2 13.5V17z" />
+    <circle cx="5" cy="17" r="2" />
+    <circle cx="17" cy="17" r="2" />
+    <path d="M6 11l2.5-3.5h7L18 11" />
+    <path d="M12 7.5V11" />
+  </svg>
+);
+
+const SuvIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-5c0-1.5-1-2.5-2.5-2.5H15L12.5 6H6L3 9.5C2.3 10.2 2 11 2 12V17z" />
+    <circle cx="5" cy="17" r="2" />
+    <circle cx="17" cy="17" r="2" />
+    <path d="M5.5 9.5l2-3h5l1.5 3h6" />
+    <path d="M11 6.5V9.5" />
+  </svg>
+);
+
+const PickupIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-4.5c0-1-.8-1.5-1.5-1.5H16V9c0-1.5-1-2.5-2.5-2.5H8.5L5 9.5C4.3 10 4 11 4 12v1H2v4z" />
+    <circle cx="5" cy="17" r="2" />
+    <circle cx="17" cy="17" r="2" />
+    <path d="M5 9.5h11" />
+    <path d="M11.5 6.5v3" />
+    <path d="M16 11h6" />
+  </svg>
+);
+
+const JetSkiIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M14 6l-2 2h3" />
+    <path d="M12 8l-1.5 2.5" />
+    <path d="M2 15.5l1.5-2.5 7.5-4h4.5l6.5 4.5c1 .7 1 2 0 2.5l-6 1.5H5.5L2 15.5z" />
+    <path d="M7.5 11c0-1.5 1-2.5 2.5-2.5h3.5v2.5" />
+    <path d="M3 18.5c2-.5 4 .5 6 0s4-.5 6 0 4 .5 6 0" />
+  </svg>
+);
+
 export default function MultiStepForm() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -41,10 +82,10 @@ export default function MultiStepForm() {
 
   // Step 1: Vehicle Type Options
   const vehicleTypes = [
-    { id: "sedan", label: "Sedan", icon: Car },
-    { id: "suv", label: "SUV", icon: Car }, // Reusing Car for SUV for simplicity
-    { id: "pickup", label: "Pickup", icon: Truck },
-    { id: "other", label: "Other", icon: Plus },
+    { id: "sedan", label: "Sedan", icon: SedanIcon },
+    { id: "suv", label: "SUV", icon: SuvIcon },
+    { id: "pickup", label: "Pickup", icon: PickupIcon },
+    { id: "other", label: "Other", icon: JetSkiIcon },
   ];
 
   // Step 2: Make & Model logic
