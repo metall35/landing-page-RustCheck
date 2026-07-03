@@ -63,7 +63,7 @@ export default function PreventionCarousel() {
 
         {/* 1-Year comparison results clarification */}
         <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20 shadow-sm text-center">
-          <span>⚠️ Nota: Estos resultados muestran el estado real de un coche tras 1 año completo sin tratamiento vs. 1 año protegido con Rust Check.</span>
+          <span>Note: These results show the real-world condition of a vehicle after 1 full year without treatment vs. 1 year protected with Rust Check.</span>
         </div>
       </div>
 
@@ -114,14 +114,16 @@ export default function PreventionCarousel() {
                 />
                 
                 {/* Labels overlay - Positioned at top corners to keep image content visible */}
-                <div className="absolute top-3 left-3 bg-destructive/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs font-bold border border-destructive/35 text-white shadow-md z-10 flex items-center gap-1">
+                <div className="absolute top-3 left-3 bg-destructive/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border border-destructive/35 text-white shadow-md z-10 flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                  <span>{slides[activeIndex].untreatedLabel}</span>
+                  <span className="inline sm:hidden">Untreated</span>
+                  <span className="hidden sm:inline">{slides[activeIndex].untreatedLabel}</span>
                 </div>
 
-                <div className="absolute top-3 right-3 bg-green-600/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs font-bold border border-green-500/35 text-white shadow-md z-10 flex items-center gap-1">
+                <div className="absolute top-3 right-3 bg-green-600/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border border-green-500/35 text-white shadow-md z-10 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                  <span>{slides[activeIndex].treatedLabel}</span>
+                  <span className="inline sm:hidden">Treated</span>
+                  <span className="hidden sm:inline">{slides[activeIndex].treatedLabel}</span>
                 </div>
               </div>
             </div>
