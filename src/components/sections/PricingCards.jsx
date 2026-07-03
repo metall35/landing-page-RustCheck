@@ -12,7 +12,7 @@ export default function PricingCards() {
       originalPrice: "$169.95",
       popular: false,
       icon: Car,
-      image: "/coverage_car.png", // fallback or we can use generic icons
+      image: "/pricing_sedan.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",
@@ -28,7 +28,7 @@ export default function PricingCards() {
       originalPrice: "$189.95",
       popular: true,
       icon: Car,
-      image: "/why_us_nationwide.png",
+      image: "/pricing_suv.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",
@@ -40,12 +40,12 @@ export default function PricingCards() {
       ]
     },
     {
-      type: "Truck",
+      type: "Pickup",
       price: "$189.95",
       originalPrice: "$209.95",
       popular: false,
       icon: Car,
-      image: "/why_us_roadside.png",
+      image: "/pricing_pickup.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",
