@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navbar() {
@@ -54,16 +54,57 @@ export default function Navbar() {
               </a>
             ))}
           </div>
-          <div className="flex items-center space-x-4">
+
+          <a 
+            href="tel:9058533510" 
+            className="flex items-center gap-2 text-md font-bold text-foreground/90 hover:text-primary transition-all duration-300 hover:scale-102"
+          >
+            <Phone className="w-4 h-4 text-primary animate-pulse" />
+            <span>905-853-3510</span>
+          </a>
+
+          <div className="flex items-center space-x-3">
+            <a 
+              href="#contact-location" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="p-2 text-foreground/80 hover:text-primary transition-colors hover:scale-110"
+              title="Our Location"
+            >
+              <MapPin className="w-5 h-5 text-primary" />
+            </a>
             <ThemeToggle />
-            <Button onClick={() => document.getElementById("home")?.scrollIntoView({ behavior: "smooth" })} className="font-bold rounded-full px-6 shadow-md hover:shadow-lg transition-shadow">
+            <Button 
+              onClick={() => document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" })} 
+              className="font-bold rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-300"
+            >
               Get A Quote
             </Button>
           </div>
         </div>
 
         {/* Mobile Toggle & Theme */}
-        <div className="flex items-center md:hidden space-x-2">
+        <div className="flex items-center md:hidden space-x-1">
+          <a 
+            href="tel:9058533510" 
+            className="p-2 text-foreground/80 hover:text-primary transition-colors"
+            title="Call Us"
+          >
+            <Phone className="w-4 h-4 text-primary" />
+          </a>
+          <a 
+            href="#contact-location" 
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="p-2 text-foreground/80 hover:text-primary transition-colors"
+            title="Location Map"
+          >
+            <MapPin className="w-4 h-4 text-primary" />
+          </a>
           <ThemeToggle />
           <button 
             className="p-2 text-foreground"
@@ -88,7 +129,7 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
-            <Button className="w-full font-bold" onClick={() => { document.getElementById("home")?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }}>
+            <Button className="w-full font-bold bg-primary hover:bg-primary/95 text-white" onClick={() => { document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }}>
               Get A Quote
             </Button>
           </div>

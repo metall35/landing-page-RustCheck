@@ -32,8 +32,6 @@ export default function MultiStepForm() {
     { id: "sedan", label: "Sedan", icon: Car },
     { id: "suv", label: "SUV", icon: Car }, // Reusing Car for SUV for simplicity
     { id: "truck", label: "Truck", icon: Truck },
-    { id: "minivan", label: "Minivan", icon: Van },
-    { id: "other", label: "Other", icon: Plus },
   ];
 
   // Step 2: Make & Model logic
@@ -93,7 +91,7 @@ export default function MultiStepForm() {
         
         {/* STEP 1 */}
         {step === 1 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {vehicleTypes.map((type) => {
               const Icon = type.icon;
               const isSelected = formData.vehicleType === type.id;

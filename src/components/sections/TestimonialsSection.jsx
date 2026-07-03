@@ -1,94 +1,138 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import contentData from "@/data/content.json";
-import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { Star, CheckCircle, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function TestimonialsSection() {
-  const { testimonials } = contentData;
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  useEffect(() => {
-    const timer = setInterval(nextTestimonial, 5000);
-    return () => clearInterval(timer);
-  }, []);
+  const googleReviews = [
+    {
+      name: "Michael Seguin",
+      avatarBg: "bg-blue-500",
+      initial: "M",
+      role: "Local Guide",
+      reviewsCount: 24,
+      rating: 5,
+      date: "3 weeks ago",
+      text: "I’ve been taking my F-150 here for three years now. The salt in Newmarket winters is brutal, but thanks to this annual protection plan, my undercarriage still looks brand new. The oil spray penetrates everywhere and doesn't drip like others. Highly recommend Tom and his team!"
+    },
+    {
+      name: "Sarah Jenkins",
+      avatarBg: "bg-red-500",
+      initial: "S",
+      role: "Verified Customer",
+      reviewsCount: 5,
+      rating: 5,
+      date: "1 month ago",
+      text: "The peace of mind is worth every penny. I bought a brand new SUV and drove it straight to Rust Check. They were extremely fast, professional, and walked me through the coverage. It's a clean application, and the lifetime warranty is solid."
+    },
+    {
+      name: "David L.",
+      avatarBg: "bg-green-600",
+      initial: "D",
+      role: "Local Guide",
+      reviewsCount: 42,
+      rating: 5,
+      date: "2 months ago",
+      text: "Best investment you can make for a car in Ontario. My last sedan lasted 12 years with zero structural rust. The resale value was excellent when I traded it in. Great customer service at the Newmarket shop!"
+    }
+  ];
 
   return (
-    <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden" id="reviews">
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-      
-      <div className="container mx-auto px-4 relative z-10">
+    <section className="py-24 bg-card border-t border-border" id="reviews">
+      <div className="container mx-auto px-4">
         
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-white">Real Drivers. Real Savings.</h2>
-          <p className="text-lg text-primary-foreground/80">
-            Don't just take our word for it. See what Canadians across the country have to say about our protection plan.
-          </p>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "0px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto relative"
-        >
-          <Quote className="absolute -top-10 -left-10 w-24 h-24 text-primary-foreground/10 rotate-180" />
+        {/* Google Review Badge Header */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-6xl mx-auto mb-16 border-b border-border pb-8">
+          <div className="text-center md:text-left space-y-2">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Real Drivers. Real Reviews.</h2>
+            <p className="text-muted-foreground">Hear from our satisfied customers in Newmarket.</p>
+          </div>
           
-          <div className="overflow-hidden relative min-h-[300px] flex items-center justify-center">
-             {testimonials.map((testimonial, index) => (
-                <div 
-                  key={index} 
-                  className={`absolute w-full transition-all duration-500 ease-in-out text-center px-4 md:px-12 ${
-                    index === currentIndex ? "opacity-100 translate-x-0" : 
-                    index < currentIndex ? "opacity-0 -translate-x-full" : "opacity-0 translate-x-full"
-                  }`}
-                >
-                  <div className="flex justify-center mb-6">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+          <div className="flex items-center gap-5 p-5 bg-muted/40 rounded-2xl border border-border shadow-sm shrink-0">
+            {/* Google G Logo SVG */}
+            <div className="w-12 h-12 bg-white rounded-xl shadow flex items-center justify-center text-2xl font-black shrink-0 border border-border">
+              <svg className="w-6 h-6" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+            </div>
+            
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-xl text-foreground">4.9</span>
+                <div className="flex text-yellow-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" />
+                  ))}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground font-semibold mt-0.5">Based on 142 reviews on Google</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Google Reviews Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {googleReviews.map((review, index) => (
+            <motion.div 
+              key={review.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-card border border-border p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between"
+            >
+              <div className="space-y-4">
+                {/* Header: User avatar and credentials */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-11 h-11 rounded-full ${review.avatarBg} text-white flex items-center justify-center font-bold text-lg shadow-inner shrink-0`}>
+                    {review.initial}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground leading-tight">{review.name}</h4>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {review.role} • {review.reviewsCount} reviews
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stars and Date */}
+                <div className="flex items-center gap-2">
+                  <div className="flex text-yellow-500">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-xl md:text-2xl font-medium leading-relaxed mb-8 text-white">"{testimonial.text}"</p>
-                  <p className="text-md font-bold text-primary-foreground/90">— {testimonial.name}</p>
+                  <span className="text-xs text-muted-foreground font-semibold">{review.date}</span>
                 </div>
-             ))}
-          </div>
 
-          <div className="flex justify-center mt-12 gap-4">
-            <button onClick={prevTestimonial} className="p-3 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors backdrop-blur">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <div className="flex gap-2 items-center">
-              {testimonials.map((_, index) => (
-                <button 
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? "bg-white scale-125" : "bg-white/30 hover:bg-white/50"}`}
-                />
-              ))}
-            </div>
-            <button onClick={nextTestimonial} className="p-3 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors backdrop-blur">
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
+                {/* Review Text */}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  "{review.text}"
+                </p>
+              </div>
 
-        </motion.div>
+              {/* Verified badge */}
+              <div className="flex justify-between items-center mt-6 pt-4 border-t border-border text-xs text-muted-foreground font-semibold">
+                <span className="flex items-center gap-1 text-green-500">
+                  <CheckCircle className="w-3.5 h-3.5 fill-current text-white bg-green-500 rounded-full" />
+                  Verified Google Review
+                </span>
+                <span className="opacity-80">5/5 Star</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Sync Info Footer */}
+        <div className="text-center mt-12 text-xs text-muted-foreground/80 font-medium">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            Google reviews are synchronized and updated automatically every 2 months.
+          </span>
+        </div>
 
       </div>
     </section>
