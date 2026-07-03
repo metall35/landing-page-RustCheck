@@ -83,7 +83,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full lg:w-1/2"
           >
-            <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-zinc-950 group">
+            <div className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-zinc-950 group">
               {!isPlaying ? (
                 // Video Cover State
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10 p-6 select-none">
