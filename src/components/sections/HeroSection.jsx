@@ -15,7 +15,7 @@ export default function HeroSection() {
   };
 
   const renderVideoPlayer = (isMobile = false) => (
-    <div className={`relative w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-zinc-950 group ${isMobile ? "my-6 max-w-md mx-auto" : ""}`}>
+    <div className={`relative w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-zinc-950 group ${isMobile ? "max-w-md mx-auto" : ""}`}>
       {!isPlaying ? (
         // Video Cover State
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10 p-6 select-none">
@@ -111,7 +111,7 @@ export default function HeroSection() {
                 <div className="mr-3 p-1.5 rounded-full bg-primary/15 text-primary shadow-sm">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                Engineered to fight rust, built for 🇨🇦 Canadian weather
+                Engineered to fight rust, built for Canada's harsh weather
               </li>
               <li className="flex items-center text-md md:text-lg font-medium text-foreground/90">
                 <div className="mr-3 p-1.5 rounded-full bg-primary/15 text-primary shadow-sm">
