@@ -49,7 +49,7 @@ export default function PreventionCarousel() {
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-16 bg-card border border-border rounded-3xl p-8 shadow-xl relative overflow-hidden">
+    <div className="w-full max-w-6xl mx-auto mt-16 bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
       {/* Background graphic */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
       
@@ -60,9 +60,14 @@ export default function PreventionCarousel() {
         <p className="text-sm text-muted-foreground">
           See the dramatic difference between an untreated vehicle and one protected by our annual oil-based application.
         </p>
+
+        {/* 1-Year comparison results clarification */}
+        <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20 shadow-sm text-center">
+          <span>⚠️ Nota: Estos resultados muestran el estado real de un coche tras 1 año completo sin tratamiento vs. 1 año protegido con Rust Check.</span>
+        </div>
       </div>
 
-      <div className="relative min-h-[460px] md:min-h-[400px]">
+      <div className="relative min-h-[580px] sm:min-h-[500px] lg:min-h-[380px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
@@ -78,7 +83,7 @@ export default function PreventionCarousel() {
                 Prevention Focus: 0{activeIndex + 1}
               </span>
               
-              <h4 className="text-2xl font-bold text-foreground">
+              <h4 className="text-xl md:text-2xl font-bold text-foreground">
                 {slides[activeIndex].title}
               </h4>
               
@@ -108,16 +113,15 @@ export default function PreventionCarousel() {
                   priority
                 />
                 
-                {/* Labels overlay */}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex flex-col sm:flex-row justify-between gap-2 text-white">
-                  <div className="flex items-center gap-1.5 bg-destructive/80 backdrop-blur px-2.5 py-1 rounded text-xs font-bold border border-destructive/20 shadow-sm">
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    <span>{slides[activeIndex].untreatedLabel}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-green-600/80 backdrop-blur px-2.5 py-1 rounded text-xs font-bold border border-green-500/20 shadow-sm">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>{slides[activeIndex].treatedLabel}</span>
-                  </div>
+                {/* Labels overlay - Positioned at top corners to keep image content visible */}
+                <div className="absolute top-3 left-3 bg-destructive/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs font-bold border border-destructive/35 text-white shadow-md z-10 flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{slides[activeIndex].untreatedLabel}</span>
+                </div>
+
+                <div className="absolute top-3 right-3 bg-green-600/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs font-bold border border-green-500/35 text-white shadow-md z-10 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                  <span>{slides[activeIndex].treatedLabel}</span>
                 </div>
               </div>
             </div>

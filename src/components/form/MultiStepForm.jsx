@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Car, Truck, Van, Plus, Calendar, Smile, Meh, Frown, Check, X, Search, ChevronRight, ChevronLeft } from "lucide-react";
@@ -20,6 +20,18 @@ export default function MultiStepForm() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    const handleSelect = (e) => {
+      const type = e.detail.type;
+      // Pre-fill the form vehicle type
+      setFormData(prev => ({ ...prev, vehicleType: type }));
+      // Advance to Step 2
+      setStep(2);
+    };
+    window.addEventListener("select-vehicle", handleSelect);
+    return () => window.removeEventListener("select-vehicle", handleSelect);
+  }, []);
+
   const updateForm = (key, value) => {
     setFormData({ ...formData, [key]: value });
   };
@@ -31,7 +43,8 @@ export default function MultiStepForm() {
   const vehicleTypes = [
     { id: "sedan", label: "Sedan", icon: Car },
     { id: "suv", label: "SUV", icon: Car }, // Reusing Car for SUV for simplicity
-    { id: "truck", label: "Truck", icon: Truck },
+    { id: "pickup", label: "Pickup", icon: Truck },
+    { id: "other", label: "Other", icon: Plus },
   ];
 
   // Step 2: Make & Model logic
@@ -91,7 +104,7 @@ export default function MultiStepForm() {
         
         {/* STEP 1 */}
         {step === 1 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {vehicleTypes.map((type) => {
               const Icon = type.icon;
               const isSelected = formData.vehicleType === type.id;

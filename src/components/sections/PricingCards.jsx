@@ -58,6 +58,17 @@ export default function PricingCards() {
     }
   ];
 
+  const handleSelectVehicle = (type) => {
+    // Map 'Truck' card to 'pickup' option in the form
+    const formType = type.toLowerCase() === "truck" ? "pickup" : type.toLowerCase();
+    
+    // Dispatch custom event to select the vehicle in the form and auto-advance to step 2
+    window.dispatchEvent(new CustomEvent("select-vehicle", { detail: { type: formType } }));
+    
+    // Smooth scroll to form
+    document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="py-20 bg-muted/10 relative overflow-hidden" id="pricing">
       {/* Decorative gradients */}
@@ -82,7 +93,6 @@ export default function PricingCards() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {cards.map((card, index) => {
-            const Icon = card.icon;
             return (
               <motion.div 
                 key={card.type}
@@ -90,56 +100,54 @@ export default function PricingCards() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`relative flex flex-col justify-between rounded-3xl bg-card border transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1.5 overflow-hidden ${
-                  card.popular ? "border-primary ring-2 ring-primary/20 scale-102 z-10 md:-translate-y-2 hover:-translate-y-3" : "border-border"
-                }`}
+                className="relative flex flex-col justify-between rounded-3xl bg-card border border-border hover:border-primary/40 hover:shadow-xl transition-all duration-300 shadow-md overflow-hidden group"
               >
-                {card.popular && (
-                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-black tracking-wider uppercase py-1.5 px-4 rounded-bl-2xl">
-                    Most Popular
+                {/* Vehicle Image header with price sticker overlay */}
+                <div className="relative w-full h-48 bg-zinc-900 overflow-hidden">
+                  <Image 
+                    src={card.image}
+                    alt={card.type}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                  
+                  {/* Sticker-styled price overlay */}
+                  <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground font-black text-xl py-1.5 px-4 rounded-xl shadow-lg border border-white/20 select-none animate-pulse-slow">
+                    {card.price}
                   </div>
-                )}
+                </div>
 
-                <div className="p-8 pb-6 border-b border-border">
-                  <span className="text-xs font-bold tracking-wider uppercase text-muted-foreground bg-secondary/80 px-3 py-1 rounded-full">
+                <div className="p-6 pb-4 border-b border-border">
+                  <span className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground bg-secondary/80 px-2.5 py-1 rounded-full">
                     {card.type} Program
                   </span>
                   
-                  {/* Price Tag with sticker effect */}
-                  <div className="mt-6 flex items-baseline gap-2">
-                    <span className="text-4xl md:text-5xl font-black text-foreground">{card.price}</span>
+                  <div className="mt-4 flex items-baseline gap-2">
                     <span className="text-sm text-muted-foreground line-through font-medium">{card.originalPrice}</span>
                     <span className="text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-md border border-green-500/25">
                       Save $20
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">One-time annual application fee</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">One-time annual application fee</p>
                 </div>
 
-                <div className="p-8 flex-grow">
-                  <h4 className="font-bold text-sm text-foreground uppercase tracking-wider mb-4">What's Covered:</h4>
-                  <ul className="space-y-3.5">
+                <div className="p-6 flex-grow">
+                  <h4 className="font-bold text-xs text-foreground uppercase tracking-wider mb-3">What's Covered:</h4>
+                  <ul className="space-y-2.5">
                     {card.features.map((feature) => (
-                      <li key={feature} className="flex items-start text-sm">
-                        <Check className="w-4 h-4 text-primary mr-3 mt-0.5 shrink-0" />
+                      <li key={feature} className="flex items-start text-xs">
+                        <Check className="w-3.5 h-3.5 text-primary mr-2.5 mt-0.5 shrink-0" />
                         <span className="text-muted-foreground font-medium">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="p-8 pt-0">
+                <div className="p-6 pt-0">
                   <button 
-                    onClick={() => {
-                      document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
-                      // A custom event can be fired to notify step 1 selector if we want,
-                      // but for now, scroll down.
-                    }}
-                    className={`w-full py-4 rounded-xl font-bold transition-all duration-200 text-center ${
-                      card.popular 
-                        ? "bg-primary text-primary-foreground hover:bg-primary/95 shadow-md shadow-primary/20" 
-                        : "bg-secondary text-foreground hover:bg-secondary/70 border border-border"
-                    }`}
+                    onClick={() => handleSelectVehicle(card.type)}
+                    className="w-full py-3 bg-secondary text-foreground hover:bg-primary hover:text-primary-foreground border border-border hover:border-primary rounded-xl font-bold transition-all duration-200 text-center text-sm"
                   >
                     Select {card.type} & Check In
                   </button>
