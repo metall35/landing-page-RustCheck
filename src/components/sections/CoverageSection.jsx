@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import contentData from "@/data/content.json";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -105,16 +105,14 @@ export default function CoverageSection() {
           className="mt-16 max-w-4xl mx-auto p-6 rounded-2xl border border-primary/20 bg-primary/5 backdrop-blur flex flex-col sm:flex-row items-center gap-5 shadow-sm"
         >
           <div className="p-3.5 bg-primary/10 text-primary rounded-full shrink-0 flex items-center justify-center">
-            <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
-              <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34 1.2-2.11 3.03-5.34 1.83-3.23 2.35-4 2.85-4h1l-1 7h3.5c.49 0 .56.33.38.66-.18.33-1.19 2.11-3.03 5.34-.33.58-.87 1-1.35 1z" />
-            </svg>
+            <ShieldCheck className="w-8 h-8" />
           </div>
           <div className="space-y-1.5 text-center sm:text-left">
             <h4 className="font-bold text-lg text-foreground flex items-center justify-center sm:justify-start gap-2">
-              ⚡ 100% Compatible con Vehículos Eléctricos (EV)
+              100% Compatible with Electric Vehicles (EV)
             </h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              ¿Tienes un Tesla u otro coche eléctrico? Rust Check es totalmente seguro para vehículos híbridos y eléctricos. Nuestra fórmula no conductora de electricidad protege el chasis y los paneles sin interferir con las baterías de alto voltaje, motores eléctricos, cableado o sensores del sistema.
+              Do you own a Tesla or another electric vehicle? Rust Check is completely safe for hybrid and electric vehicles. Our non-conductive formula protects the underbody and panels without interfering with high-voltage battery packs, electric motors, wiring, or system sensors.
             </p>
           </div>
         </motion.div>
