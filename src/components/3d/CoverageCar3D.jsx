@@ -88,7 +88,7 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
     { index: 0, label: "1", pos: [0, 0.22, 0.95], lineClass: "up" },
     { index: 2, label: "2", pos: [0.65, -0.15, 0.55], lineClass: "up" },
     { index: 1, label: "3", pos: [0.55, -0.25, 0.0], lineClass: "down" },
-    { index: 3, label: "4", pos: [0.65, 0.15, -0.25], lineClass: "up" }
+    { index: 3, label: "4", pos: [0.4, 0.2, -0.85], lineClass: "up" }
   ];
 
   return (
@@ -161,7 +161,7 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
 
 export default function CoverageCar3D({ activeCategory, setActiveCategory }) {
   return (
-    <div style={{ width: "100%", height: "500px" }} className="relative rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing bg-gradient-to-br from-card via-background to-muted border border-border shadow-lg group">
+    <div style={{ width: "100%", height: "500px" }} className="relative rounded-3xl overflow-hidden cursor-default bg-gradient-to-br from-card via-background to-muted border border-border shadow-lg group">
       
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
 
@@ -173,7 +173,7 @@ export default function CoverageCar3D({ activeCategory, setActiveCategory }) {
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       >
         <Suspense fallback={null}>
-          <PresentationControls speed={1.5} global zoom={4.5} polar={[-0.1, Math.PI / 4]}>
+          <PresentationControls enabled={false} speed={0} cursor={false} global zoom={4.5} polar={[-0.1, Math.PI / 4]}>
             <Stage environment="city" intensity={1} shadows={false}>
               <CarModelWithHotspots activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
             </Stage>
@@ -181,13 +181,6 @@ export default function CoverageCar3D({ activeCategory, setActiveCategory }) {
         </Suspense>
       </Canvas>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 bg-background/90 backdrop-blur-md border border-border rounded-full shadow-lg pointer-events-none flex items-center gap-3 transition-transform duration-500 group-hover:-translate-y-1">
-        <div className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-        </div>
-        <span className="text-sm font-semibold tracking-wider text-foreground uppercase">Interactive 3D Model</span>
-      </div>
     </div>
   );
 }

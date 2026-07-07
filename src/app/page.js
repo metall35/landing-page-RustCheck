@@ -38,8 +38,6 @@ export default function Home() {
         {/* 5. Trust / Reliability Section (Updated Newmarket copy) */}
         <TrustSection />
         
-        {/* 6. Why Choose Us (Reputation grid) */}
-        <WhyChooseUsSection />
         
         {/* 7. Treated vs Untreated Comparison Carousel */}
         <section className="py-16 bg-muted/20 border-t border-border">

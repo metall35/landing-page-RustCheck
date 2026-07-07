@@ -13,7 +13,7 @@ export default function TestimonialsSection() {
       reviewsCount: 24,
       rating: 5,
       date: "3 weeks ago",
-      text: "I’ve been taking my F-150 here for three years now. The salt in Newmarket winters is brutal, but thanks to this annual protection plan, my undercarriage still looks brand new. The oil spray penetrates everywhere and doesn't drip like others. Highly recommend Tom and his team!"
+      text: "I’ve been taking my F-150 here for three years now. The salt in Newmarket winters is brutal, but thanks to this annual protection plan, my undercarriage still looks brand new. The oil spray penetrates everywhere and doesn't drip like others. Highly recommend Reagan   and his team!"
     },
     {
       name: "Sarah Jenkins",
@@ -45,7 +45,7 @@ export default function TestimonialsSection() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-6xl mx-auto mb-16 border-b border-border pb-8">
           <div className="text-center md:text-left space-y-2">
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Real Drivers. Real Reviews.</h2>
-            <p className="text-muted-foreground">Hear from our satisfied customers in Newmarket.</p>
+            <p className="text-muted-foreground">Hear from our satisfied customers in <b>Newmarket</b>.</p>
           </div>
           
           <div className="flex items-center gap-5 p-5 bg-muted/40 rounded-2xl border border-border shadow-sm shrink-0">

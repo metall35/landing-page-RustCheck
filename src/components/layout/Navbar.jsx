@@ -80,7 +80,7 @@ export default function Navbar() {
               onClick={() => document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" })} 
               className="font-bold rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-300"
             >
-              Get A Quote
+              Book Now!
             </Button>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function Navbar() {
               </a>
             ))}
             <Button className="w-full font-bold bg-primary hover:bg-primary/95 text-white" onClick={() => { document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }}>
-              Get A Quote
+              Book Now!
             </Button>
           </div>
         </div>

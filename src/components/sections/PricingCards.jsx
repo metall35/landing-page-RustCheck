@@ -8,11 +8,11 @@ export default function PricingCards() {
   const cards = [
     {
       type: "Sedan",
-      price: "$149.95",
-      originalPrice: "$169.95",
+      price: "$129.95",
+      originalPrice: "$149.95",
       popular: false,
       icon: Car,
-      image: "/pricing_sedan.png",
+      image: "/civic.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",
@@ -24,11 +24,11 @@ export default function PricingCards() {
     },
     {
       type: "SUV",
-      price: "$169.95",
-      originalPrice: "$189.95",
+      price: "$149.95",
+      originalPrice: "$169.95",
       popular: true,
       icon: Car,
-      image: "/pricing_suv.png",
+      image: "/rav4.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",
@@ -41,11 +41,11 @@ export default function PricingCards() {
     },
     {
       type: "Pickup",
-      price: "$189.95",
-      originalPrice: "$209.95",
+      price: "$169.95",
+      originalPrice: "$189.95",
       popular: false,
       icon: Car,
-      image: "/pricing_pickup.png",
+      image: "/f150.png",
       features: [
         "Full Underbody Spray",
         "Inner Panel Protection",

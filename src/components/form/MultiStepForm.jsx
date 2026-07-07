@@ -6,46 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Lock, Car, Truck, Van, Plus, Calendar, Smile, Meh, Frown, Check, X, Search, ChevronRight, ChevronLeft } from "lucide-react";
 import carsData from "@/data/cars.json";
 
-const SedanIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-3.5c0-1-.5-2-1.5-2.5L16 9H8l-4.5 2C2.5 11.5 2 12.5 2 13.5V17z" />
-    <circle cx="5" cy="17" r="2" />
-    <circle cx="17" cy="17" r="2" />
-    <path d="M6 11l2.5-3.5h7L18 11" />
-    <path d="M12 7.5V11" />
-  </svg>
-);
-
-const SuvIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-5c0-1.5-1-2.5-2.5-2.5H15L12.5 6H6L3 9.5C2.3 10.2 2 11 2 12V17z" />
-    <circle cx="5" cy="17" r="2" />
-    <circle cx="17" cy="17" r="2" />
-    <path d="M5.5 9.5l2-3h5l1.5 3h6" />
-    <path d="M11 6.5V9.5" />
-  </svg>
-);
-
-const PickupIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M2 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h2v-4.5c0-1-.8-1.5-1.5-1.5H16V9c0-1.5-1-2.5-2.5-2.5H8.5L5 9.5C4.3 10 4 11 4 12v1H2v4z" />
-    <circle cx="5" cy="17" r="2" />
-    <circle cx="17" cy="17" r="2" />
-    <path d="M5 9.5h11" />
-    <path d="M11.5 6.5v3" />
-    <path d="M16 11h6" />
-  </svg>
-);
-
-const JetSkiIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M14 6l-2 2h3" />
-    <path d="M12 8l-1.5 2.5" />
-    <path d="M2 15.5l1.5-2.5 7.5-4h4.5l6.5 4.5c1 .7 1 2 0 2.5l-6 1.5H5.5L2 15.5z" />
-    <path d="M7.5 11c0-1.5 1-2.5 2.5-2.5h3.5v2.5" />
-    <path d="M3 18.5c2-.5 4 .5 6 0s4-.5 6 0 4 .5 6 0" />
-  </svg>
-);
+// Removed inline SVG components, using images instead
 
 export default function MultiStepForm() {
   const [step, setStep] = useState(1);
@@ -82,10 +43,10 @@ export default function MultiStepForm() {
 
   // Step 1: Vehicle Type Options
   const vehicleTypes = [
-    { id: "sedan", label: "Sedan", icon: SedanIcon },
-    { id: "suv", label: "SUV", icon: SuvIcon },
-    { id: "pickup", label: "Pickup", icon: PickupIcon },
-    { id: "other", label: "Other", icon: JetSkiIcon },
+    { id: "sedan", label: "Sedan", iconSrc: "/sedan.svg", iconClass: "w-14 h-14" },
+    { id: "suv", label: "SUV", iconSrc: "/suv.svg", iconClass: "w-14 h-14" },
+    { id: "pickup", label: "Pickup", iconSrc: "/truck.svg", iconClass: "w-14 h-14" },
+    { id: "other", label: "Other", iconSrc: "/other.svg", iconClass: "w-20 h-20" },
   ];
 
   // Step 2: Make & Model logic
@@ -145,20 +106,23 @@ export default function MultiStepForm() {
         
         {/* STEP 1 */}
         {step === 1 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {vehicleTypes.map((type) => {
-              const Icon = type.icon;
               const isSelected = formData.vehicleType === type.id;
               return (
                 <button
                   key={type.id}
                   onClick={() => { updateForm("vehicleType", type.id); setTimeout(nextStep, 300); }}
-                  className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 ${
+                  className={`group flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 ${
                     isSelected ? "border-primary bg-primary/10 scale-105" : "border-border hover:border-primary/50 hover:bg-secondary/50"
                   }`}
                 >
-                  <Icon className={`w-10 h-10 mb-3 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                  <span className="font-semibold text-sm">{type.label}</span>
+                  <img 
+                    src={type.iconSrc} 
+                    alt={type.label} 
+                    className={`${type.iconClass || "w-14 h-14"} mb-3 object-contain transition-all duration-200 ${isSelected ? "" : "opacity-70 group-hover:opacity-100"}`} 
+                  />
+                  <span className={`font-semibold text-sm transition-colors ${isSelected ? "text-primary" : "text-foreground"}`}>{type.label}</span>
                 </button>
               );
             })}

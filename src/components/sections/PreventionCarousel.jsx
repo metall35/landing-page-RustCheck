@@ -13,7 +13,7 @@ export default function PreventionCarousel() {
       title: "Undercarriage & Structural Frame",
       description: "Road salt, moisture, and chemical brines accumulate on your vehicle's frame. Without protection, structural steel weakens, posing major safety hazards and destroying resale value.",
       prevention: "Prevents structural frame decay, body floorboard rot, and underbody component deterioration.",
-      image: "/rust_check_undercarriage.png",
+      image: "/split_undercarriage.png",
       untreatedLabel: "Untreated: Severe Frame Corrosion",
       treatedLabel: "Treated: Clean, Self-Healing Oil Coating"
     },
@@ -21,7 +21,7 @@ export default function PreventionCarousel() {
       title: "Inner Door Seams & Body Panels",
       description: "Moisture traps inside doors, tailgates, and rocker panels. Water pools at the bottom seams, causing paint bubbling and rust-through from the inside out before you even notice it.",
       prevention: "Prevents door panel rust-through, paint bubbling, and rocker panel degradation.",
-      image: "/rust_check_door_seams.png",
+      image: "/split_door_seams_v2.png",
       untreatedLabel: "Untreated: Paint Bubbling & Rust-Through",
       treatedLabel: "Treated: Fluid Shield Sealing Seams"
     },
@@ -29,7 +29,7 @@ export default function PreventionCarousel() {
       title: "Brake Lines & Mechanical Cables",
       description: "Exposed metallic lines carry high-pressure brake fluid and fuel. Corroded lines become brittle and are prone to sudden leaks, causing potential braking system failure.",
       prevention: "Prevents brake line failure, fuel line leakage, and emergency cable binding.",
-      image: "/rust_check_brakelines.png",
+      image: "/split_brake_lines.png",
       untreatedLabel: "Untreated: Pitted & Brittle Brake Lines",
       treatedLabel: "Treated: Shiny, Protected Metallic Lines"
     }
@@ -60,51 +60,20 @@ export default function PreventionCarousel() {
         <p className="text-sm text-muted-foreground">
           See the dramatic difference between an untreated vehicle and one protected by our annual oil-based application.
         </p>
-
-        {/* 1-Year comparison results clarification */}
-        <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20 shadow-sm text-center">
-          <span>Note: These results show the real-world condition of a vehicle after 1 full year without treatment vs. 1 year protected with Rust Check.</span>
-        </div>
       </div>
 
-      <div className="relative min-h-[580px] sm:min-h-[500px] lg:min-h-[380px]">
+      <div className="relative min-h-[450px] sm:min-h-[540px] md:min-h-[400px] lg:min-h-[420px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.5 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
+            className="w-full flex justify-center"
           >
-            {/* Left: Copy and details */}
-            <div className="lg:col-span-5 space-y-5">
-              <span className="text-xs font-black tracking-wider uppercase text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                Prevention Focus: 0{activeIndex + 1}
-              </span>
-              
-              <h4 className="text-xl md:text-2xl font-bold text-foreground">
-                {slides[activeIndex].title}
-              </h4>
-              
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                {slides[activeIndex].description}
-              </p>
-
-              <div className="p-4 bg-muted/30 rounded-2xl border border-border space-y-3">
-                <h5 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-4.5 h-4.5 text-primary shrink-0" />
-                  Annual Plan Benefit
-                </h5>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">
-                  {slides[activeIndex].prevention}
-                </p>
-              </div>
-            </div>
-
-            {/* Right: Side-by-side comparison images */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="relative w-full aspect-[16/10] md:aspect-[16/9] rounded-2xl overflow-hidden shadow-lg border border-border/80 bg-zinc-950">
+            {/* Desktop View: Full-width comparison images */}
+            <div className="hidden md:block w-full max-w-4xl mx-auto space-y-4">
+              <div className="relative w-full aspect-[16/9] lg:aspect-[2/1] rounded-2xl overflow-hidden shadow-lg border border-border/80 bg-zinc-950">
                 <Image 
                   src={slides[activeIndex].image}
                   alt={slides[activeIndex].title}
@@ -113,17 +82,55 @@ export default function PreventionCarousel() {
                   priority
                 />
                 
-                {/* Labels overlay - Positioned at top corners to keep image content visible */}
-                <div className="absolute top-3 left-3 bg-destructive/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border border-destructive/35 text-white shadow-md z-10 flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                  <span className="inline sm:hidden">Untreated</span>
-                  <span className="hidden sm:inline">{slides[activeIndex].untreatedLabel}</span>
+                {/* Labels overlay */}
+                <div className="absolute top-3 right-3 bg-destructive/95 backdrop-blur-md px-3 py-2 rounded-lg text-sm font-bold border border-destructive/35 text-white shadow-xl z-10 flex items-center gap-1.5 min-w-[120px] justify-center">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>{slides[activeIndex].untreatedLabel}</span>
                 </div>
 
-                <div className="absolute top-3 right-3 bg-green-600/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border border-green-500/35 text-white shadow-md z-10 flex items-center gap-1.5">
+                <div className="absolute top-3 left-3 bg-green-600/95 backdrop-blur-md px-3 py-2 rounded-lg text-sm font-bold border border-green-500/35 text-white shadow-xl z-10 flex items-center gap-1.5 min-w-[120px] justify-center">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>{slides[activeIndex].treatedLabel}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile View: Stacked comparison images */}
+            <div className="block md:hidden w-full max-w-sm mx-auto flex flex-col rounded-2xl overflow-hidden shadow-lg border border-border/80 bg-zinc-950">
+              
+              {/* TOP: Treated (Left half of image) */}
+              <div className="relative w-full aspect-[4/3] overflow-hidden border-b-[6px] border-zinc-950 bg-zinc-900">
+                <div className="absolute top-0 left-0 w-[200%] h-full">
+                  <Image 
+                    src={slides[activeIndex].image}
+                    alt={`${slides[activeIndex].title} Treated`}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+                {/* Treated Label */}
+                <div className="absolute top-3 left-3 bg-green-600/95 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold border border-green-500/35 text-white shadow-xl z-10 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                  <span className="inline sm:hidden">Treated</span>
-                  <span className="hidden sm:inline">{slides[activeIndex].treatedLabel}</span>
+                  <span>Treated</span>
+                </div>
+              </div>
+
+              {/* BOTTOM: Untreated (Right half of image) */}
+              <div className="relative w-full aspect-[4/3] overflow-hidden bg-zinc-900">
+                <div className="absolute top-0 right-0 w-[200%] h-full">
+                  <Image 
+                    src={slides[activeIndex].image}
+                    alt={`${slides[activeIndex].title} Untreated`}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+                {/* Untreated Label */}
+                <div className="absolute top-3 left-3 bg-destructive/95 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold border border-destructive/35 text-white shadow-xl z-10 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  <span>Untreated</span>
                 </div>
               </div>
             </div>
@@ -131,8 +138,15 @@ export default function PreventionCarousel() {
         </AnimatePresence>
       </div>
 
+      {/* 1-Year comparison results clarification */}
+      <div className="mt-3 mb-2 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20 shadow-sm text-center">
+          <span>Note: These results show the real-world condition of a vehicle after 1 full year without treatment vs. 1 year protected with Rust Check.</span>
+        </div>
+      </div>
+
       {/* Carousel navigation */}
-      <div className="flex justify-between items-center mt-8 pt-4 border-t border-border">
+      <div className="flex justify-between items-center pt-4 border-t border-border">
         {/* Indicators */}
         <div className="flex gap-2">
           {slides.map((_, idx) => (
