@@ -42,8 +42,8 @@ export default function HeroSection() {
               Newmarket Store - Now Booking Appointments
             </div>
             
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-              A proven, <span className="font-bold">50+ year</span> rust protection formula <span className="text-primary">preventing corrosion</span> on all iron and steel parts of your vehicle.
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+              The <span className="text-primary">All-In-1 Rust Protection</span> Plan Designed to Extend Your Vehicle&apos;s Life
             </h1>
 
             {/* Mobile Video: Inserted between Subtitle and Bullets */}
@@ -62,13 +62,13 @@ export default function HeroSection() {
                 <div className="mr-3 p-1.5 rounded-full bg-primary/15 text-primary shadow-sm">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                Engineered to fight rust, built for Canada's harsh weather
+                Engineered to fight rust
               </li>
               <li className="flex items-center text-md md:text-lg font-medium text-foreground/90">
                 <div className="mr-3 p-1.5 rounded-full bg-primary/15 text-primary shadow-sm">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                Time-tested, oil-based rust inhibitors
+                Built for Canada's harsh weather
               </li>
             </ul>
 

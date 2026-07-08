@@ -109,10 +109,10 @@ export default function CoverageSection() {
           </div>
           <div className="space-y-1.5 text-center sm:text-left">
             <h4 className="font-bold text-lg text-foreground flex items-center justify-center sm:justify-start gap-2">
-              100% Compatible with Electric Vehicles (EV)
+              Do you own an electric vehicle?
             </h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Do you own a Tesla or another electric vehicle? Rust Check is completely safe for hybrid and electric vehicles. Our non-conductive formula protects the underbody and panels without interfering with high-voltage battery packs, electric motors, wiring, or system sensors.
+              Rust Check is completely safe for your Tesla, hybrid, or other electric vehicles. Our non-conductive formula protects the underbody and panels without interfering with high-voltage battery packs, electric motors, wiring, or system sensors.
             </p>
           </div>
         </motion.div>

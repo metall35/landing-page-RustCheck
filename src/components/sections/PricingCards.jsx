@@ -87,7 +87,7 @@ export default function PricingCards() {
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">Total Rust Protection Prices</h2>
           <p className="text-lg text-muted-foreground">
-            Affordable, time-tested rust protection options built for Newmarket winters. Select your vehicle class below to begin.
+            Select your vehicle class below to begin.
           </p>
         </motion.div>
 
