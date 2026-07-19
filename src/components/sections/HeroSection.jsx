@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HeroSection() {
@@ -43,7 +43,7 @@ export default function HeroSection() {
             </div>
             
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-              The <span className="text-primary">All-In-1 Rust Protection</span> Plan Designed to Extend Your Vehicle&apos;s Life
+              The <span className="text-primary">All-In-1 Rust Protection </span> Plan Designed to Extend Your Vehicle&apos;s Life
             </h1>
 
             {/* Mobile Video: Inserted between Subtitle and Bullets */}
