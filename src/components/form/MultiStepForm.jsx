@@ -49,9 +49,32 @@ export default function MultiStepForm() {
     { id: "other", label: "Other", iconSrc: "/other.svg", iconClass: "w-20 h-20" },
   ];
 
-  // Step 2: Make & Model logic
-  const filteredMakes = carsData.filter(car => car.make.toLowerCase().includes(searchTerm.toLowerCase()));
-  const selectedMakeData = carsData.find(car => car.make === formData.make);
+  const [selectedBrand, setSelectedBrand] = useState("all");
+  const [customMake, setCustomMake] = useState("");
+  const [customModel, setCustomModel] = useState("");
+
+  // Flatten all cars from all brands
+  const allCars = carsData.flatMap(b =>
+    b.models.map(m => ({
+      make: b.make,
+      model: m,
+      id: `${b.make}-${m}`
+    }))
+  );
+
+  const filteredCars = allCars.filter(car => {
+    const matchesBrand = selectedBrand === "all" || car.make === selectedBrand;
+    const matchesSearch =
+      !searchTerm ||
+      car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.model.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesBrand && matchesSearch;
+  });
+
+  const handleSelectCar = (make, model) => {
+    setFormData(prev => ({ ...prev, make, model }));
+    setTimeout(nextStep, 300);
+  };
 
   // Step 3: Duration
   const durations = [
@@ -91,7 +114,7 @@ export default function MultiStepForm() {
         </div>
         <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
           {step === 1 && "What type of vehicle do you have?"}
-          {step === 2 && "What is the make and model?"}
+          {step === 2 && "Select your Car (All Brands & Models)"}
           {step === 3 && "How long do you plan to keep your vehicle?"}
           {step === 4 && "What condition is your vehicle in?"}
           {step === 5 && "Have you ever used any type of rust protection?"}
@@ -131,51 +154,89 @@ export default function MultiStepForm() {
 
         {/* STEP 2 */}
         {step === 2 && (
-          <div className="space-y-6">
-            {!formData.make ? (
-              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input 
-                    type="text" 
-                    placeholder="Search Make (e.g. Toyota, Ford)" 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors"
-                  />
-                </div>
-                <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                  {filteredMakes.map(car => (
-                    <button
-                      key={car.make}
-                      onClick={() => updateForm("make", car.make)}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-secondary/30 hover:bg-primary/10 hover:text-primary font-medium transition-colors"
-                    >
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input 
+                type="text" 
+                placeholder="Search any car or brand (e.g. Toyota, Civic, F-150)..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors text-sm"
+              />
+            </div>
+
+            {/* Brand Filter Pills */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 custom-scrollbar text-xs">
+              <button
+                type="button"
+                onClick={() => setSelectedBrand("all")}
+                className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
+                  selectedBrand === "all"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                All Brands ({allCars.length})
+              </button>
+              {carsData.map(b => (
+                <button
+                  key={b.make}
+                  type="button"
+                  onClick={() => setSelectedBrand(b.make)}
+                  className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
+                    selectedBrand === b.make
+                      ? "bg-primary text-primary-foreground font-semibold"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  {b.make}
+                </button>
+              ))}
+            </div>
+
+            {/* All Cars Grid */}
+            <div className="max-h-[260px] overflow-y-auto pr-1 custom-scrollbar grid grid-cols-2 gap-2">
+              {filteredCars.map((car) => {
+                const isSelected = formData.make === car.make && formData.model === car.model;
+                return (
+                  <button
+                    key={car.id}
+                    type="button"
+                    onClick={() => handleSelectCar(car.make, car.model)}
+                    className={`flex flex-col text-left px-3 py-2.5 rounded-lg border-2 transition-all duration-200 ${
+                      isSelected
+                        ? "border-primary bg-primary/10 scale-[1.02]"
+                        : "border-border/60 bg-secondary/20 hover:border-primary/50 hover:bg-secondary/60"
+                    }`}
+                  >
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       {car.make}
-                    </button>
-                  ))}
-                  {filteredMakes.length === 0 && <p className="text-center text-muted-foreground py-4">No makes found.</p>}
+                    </span>
+                    <span className="text-sm font-semibold text-foreground truncate">
+                      {car.model}
+                    </span>
+                  </button>
+                );
+              })}
+              {filteredCars.length === 0 && (
+                <div className="col-span-2 text-center py-6 text-muted-foreground text-sm">
+                  No cars found matching "{searchTerm}".
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-lg">{formData.make}</span>
-                  <button onClick={() => updateForm("make", "")} className="text-sm text-primary hover:underline">Change Make</button>
-                </div>
-                <div className="max-h-[240px] overflow-y-auto space-y-2 pr-2 custom-scrollbar grid grid-cols-2 gap-2">
-                  {selectedMakeData?.models.map(model => (
-                    <button
-                      key={model}
-                      onClick={() => { updateForm("model", model); setTimeout(nextStep, 300); }}
-                      className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 border-2 ${
-                        formData.model === model ? "border-primary bg-primary/10" : "border-transparent bg-secondary/30 hover:bg-primary/10"
-                      }`}
-                    >
-                      {model}
-                    </button>
-                  ))}
-                </div>
+              )}
+            </div>
+
+            {/* Selected Summary or Custom Input option */}
+            {formData.make && formData.model && (
+              <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border">
+                <span>Selected: <strong className="text-foreground">{formData.make} {formData.model}</strong></span>
+                <button 
+                  onClick={nextStep} 
+                  className="text-primary font-semibold hover:underline flex items-center"
+                >
+                  Continue →
+                </button>
               </div>
             )}
           </div>
