@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, Calendar, Smile, Meh, Frown, Check, X, Search, ChevronRight, ChevronLeft, User, Mail, Phone, Clock, CalendarCheck, Loader2, AlertTriangle } from "lucide-react";
+import { Lock, Calendar, Smile, Meh, Frown, Check, X, Search, ChevronRight, ChevronLeft, User, Mail, Phone, Clock, CalendarCheck, Loader2, AlertTriangle, Send } from "lucide-react";
 import carsData from "@/data/cars.json";
 import ExitIntentModal from "@/components/form/ExitIntentModal";
 import { trackFormEvent } from "@/lib/gtag";
@@ -16,9 +16,22 @@ const STEP_NAMES = [
   "Rust Condition",
   "Previous Protection",
   "Timeframe Urgency",
-  "Schedule Appointment",
+  "Schedule / Contact",
   "Confirmation"
 ];
+
+// Helper: Get available time slots by day of week
+// Mon-Fri (1-5): 10:00, 11:00, 13:00
+// Sat (6): 10:00, 11:00
+// Sun (0): OFF
+export function getTimeSlotsForDate(dateStr) {
+  if (!dateStr) return [];
+  const d = new Date(`${dateStr}T00:00:00`);
+  const day = d.getDay();
+  if (day === 0) return []; // Sunday: OFF
+  if (day === 6) return ["10:00", "11:00"]; // Saturday: 10 AM, 11 AM
+  return ["10:00", "11:00", "13:00"]; // Mon - Fri: 10 AM, 11 AM, 1 PM
+}
 
 export default function MultiStepForm() {
   const [step, setStep] = useState(1);
@@ -48,9 +61,20 @@ export default function MultiStepForm() {
   const [emailAlreadyBooked, setEmailAlreadyBooked] = useState(false);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
+  const isJustLooking = formData.timeframe === "looking";
+  const availableTimeSlots = getTimeSlotsForDate(bookingData.date);
+  const isSunday = new Date(`${bookingData.date}T00:00:00`).getDay() === 0;
+
+  // Auto-adjust selected time if current time is not available for selected date
+  useEffect(() => {
+    if (availableTimeSlots.length > 0 && !availableTimeSlots.includes(bookingData.time)) {
+      setBookingData(prev => ({ ...prev, time: availableTimeSlots[0] }));
+    }
+  }, [bookingData.date]);
+
   // Check Calendar Availability and Duplicate Bookings for selected date & email
   useEffect(() => {
-    if (step !== 7 || !bookingData.date) return;
+    if (step !== 7 || isJustLooking || !bookingData.date) return;
 
     let isMounted = true;
     setCheckingAvailability(true);
@@ -73,7 +97,7 @@ export default function MultiStepForm() {
     return () => {
       isMounted = false;
     };
-  }, [step, bookingData.date, bookingData.email]);
+  }, [step, bookingData.date, bookingData.email, isJustLooking]);
 
   // Safety prompt before closing tab or reloading page
   useEffect(() => {
@@ -99,9 +123,15 @@ export default function MultiStepForm() {
   useEffect(() => {
     const handleSelect = (e) => {
       const type = e.detail.type;
-      setFormData(prev => ({ ...prev, vehicleType: type }));
+      updateForm("vehicleType", type);
       trackFormEvent("form_option_selected", { step_number: 1, key: "vehicleType", value: type });
-      setStep(2);
+      if (type === "other") {
+        updateForm("make", "Other");
+        updateForm("model", "Other");
+        setStep(3);
+      } else {
+        setStep(2);
+      }
     };
     window.addEventListener("select-vehicle", handleSelect);
     return () => window.removeEventListener("select-vehicle", handleSelect);
@@ -125,7 +155,11 @@ export default function MultiStepForm() {
   };
 
   const prevStep = () => {
-    setStep((s) => Math.max(s - 1, 1));
+    if (step === 3 && formData.vehicleType === "other") {
+      setStep(1);
+    } else {
+      setStep((s) => Math.max(s - 1, 1));
+    }
   };
 
   // Step 1: Vehicle Type Options
@@ -153,6 +187,17 @@ export default function MultiStepForm() {
       car.model.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesBrand && matchesSearch;
   });
+
+  const handleVehicleTypeSelect = (typeId) => {
+    updateForm("vehicleType", typeId);
+    if (typeId === "other") {
+      updateForm("make", "Other");
+      updateForm("model", "Other");
+      setTimeout(() => setStep(3), 300);
+    } else {
+      setTimeout(nextStep, 300);
+    }
+  };
 
   const handleSelectCar = (make, model) => {
     setFormData(prev => ({ ...prev, make, model }));
@@ -183,44 +228,71 @@ export default function MultiStepForm() {
     { id: "looking", label: "Just looking", icon: Search },
   ];
 
-  // Available Time Slots for Step 7
-  const timeSlots = [
-    "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"
-  ];
+  const handleTimeframeSelect = (tId) => {
+    updateForm("timeframe", tId);
+    setTimeout(nextStep, 300);
+  };
 
   const handleScheduleSubmit = async (e) => {
     e.preventDefault();
-    if (!bookingData.name || !bookingData.email || !bookingData.date || !bookingData.time) {
-      toast.error("Please fill in all required contact and appointment fields.");
+    if (!bookingData.name || !bookingData.email) {
+      toast.error("Please fill in your name and email.");
+      return;
+    }
+
+    if (!isJustLooking && (!bookingData.date || !bookingData.time)) {
+      toast.error("Please select a date and time for your appointment.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/schedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...bookingData,
-          formData
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        trackFormEvent("booking_submit_success", {
-          date: bookingData.date,
-          time: bookingData.time,
-          vehicle: `${formData.make} ${formData.model}`
+      if (isJustLooking) {
+        // Submit lead to Google Sheets (Just Looking)
+        const res = await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...bookingData,
+            formData
+          })
         });
-        toast.success("Appointment successfully scheduled!");
-        setStep(8); // Go to confirmation screen
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          trackFormEvent("lead_submit_success", { name: bookingData.name });
+          toast.success("Thank you! We will contact you soon.");
+          setStep(8);
+        } else {
+          throw new Error(data.details || data.error || "Failed to submit contact request.");
+        }
       } else {
-        throw new Error(data.details || data.error || "Failed to schedule appointment");
+        // Submit Google Calendar appointment
+        const res = await fetch("/api/schedule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...bookingData,
+            formData
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          trackFormEvent("booking_submit_success", {
+            date: bookingData.date,
+            time: bookingData.time,
+            vehicle: `${formData.make} ${formData.model}`
+          });
+          toast.success("Appointment successfully scheduled!");
+          setStep(8);
+        } else {
+          throw new Error(data.details || data.error || "Failed to schedule appointment.");
+        }
       }
     } catch (err) {
-      console.error("Booking error:", err);
-      toast.error(err.message || "Something went wrong while booking. Please try again.");
+      console.error("Form submit error:", err);
+      toast.error(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -248,8 +320,8 @@ export default function MultiStepForm() {
           {step === 4 && "What condition is your vehicle in?"}
           {step === 5 && "Have you ever used any type of rust protection?"}
           {step === 6 && "When are you planning to have your vehicle checked?"}
-          {step === 7 && "Select Date & Time for Your Inspection"}
-          {step === 8 && "Appointment Confirmed!"}
+          {step === 7 && (isJustLooking ? "Let Us Contact You" : "Select Date & Time for Your Service")}
+          {step === 8 && (isJustLooking ? "Thank You!" : "Appointment Confirmed!")}
         </CardTitle>
         {step <= 7 && (
           <div className="w-full bg-secondary h-2 mt-4 rounded-full overflow-hidden">
@@ -268,10 +340,7 @@ export default function MultiStepForm() {
               return (
                 <button
                   key={type.id}
-                  onClick={() => { 
-                    updateForm("vehicleType", type.id); 
-                    setTimeout(nextStep, 300); 
-                  }}
+                  onClick={() => handleVehicleTypeSelect(type.id)}
                   className={`group flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 ${
                     isSelected ? "border-primary bg-primary/10 scale-105" : "border-border hover:border-primary/50 hover:bg-secondary/50"
                   }`}
@@ -454,7 +523,7 @@ export default function MultiStepForm() {
               return (
                 <button
                   key={t.id}
-                  onClick={() => { updateForm("timeframe", t.id); }}
+                  onClick={() => handleTimeframeSelect(t.id)}
                   className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 ${
                     isSelected ? "border-primary bg-primary/10 scale-105" : "border-border hover:border-primary/50 hover:bg-secondary/50"
                   }`}
@@ -464,70 +533,79 @@ export default function MultiStepForm() {
                 </button>
               );
             })}
-            {formData.timeframe && (
-              <div className="col-span-2 mt-4">
-                <Button size="lg" className="w-full text-lg font-bold py-6 group" onClick={nextStep}>
-                  Schedule Inspection <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            )}
           </div>
         )}
 
-        {/* STEP 7: Google Calendar Booking Section */}
+        {/* STEP 7: Google Calendar Booking or Lead Contact Section */}
         {step === 7 && (
           <form onSubmit={handleScheduleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             
-            {/* Date & Time Selection */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1">
-                  Select Date
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="date"
-                    min={todayStr}
-                    value={bookingData.date}
-                    onChange={(e) => updateBooking("date", e.target.value)}
-                    required
-                    className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors bg-background"
-                  />
-                </div>
-              </div>
+            {/* Date & Time Selection (Hidden if "Just Looking") */}
+            {!isJustLooking && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1">
+                      Select Date
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        type="date"
+                        min={todayStr}
+                        value={bookingData.date}
+                        onChange={(e) => updateBooking("date", e.target.value)}
+                        required
+                        className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors bg-background"
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1">
-                  Select Time Slot
-                </label>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <select
-                    value={bookingData.time}
-                    onChange={(e) => updateBooking("time", e.target.value)}
-                    required
-                    className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors bg-background appearance-none"
-                  >
-                    {timeSlots.map((t) => {
-                      const isBooked = bookedSlots.includes(t);
-                      const label = t === "12:00" ? "12:00 PM" : Number(t.split(":")[0]) > 12 ? `${Number(t.split(":")[0]) - 12}:00 PM` : `${t} AM`;
-                      return (
-                        <option key={t} value={t} disabled={isBooked}>
-                          {label} {isBooked ? "❌ (Occupied)" : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1">
+                      Select Time Slot
+                    </label>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <select
+                        value={bookingData.time}
+                        onChange={(e) => updateBooking("time", e.target.value)}
+                        required
+                        disabled={isSunday || availableTimeSlots.length === 0}
+                        className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors bg-background appearance-none disabled:opacity-50"
+                      >
+                        {isSunday ? (
+                          <option value="">Closed on Sundays</option>
+                        ) : (
+                          availableTimeSlots.map((t) => {
+                            const isBooked = bookedSlots.includes(t);
+                            const label = t === "12:00" ? "12:00 PM" : Number(t.split(":")[0]) > 12 ? `${Number(t.split(":")[0]) - 12}:00 PM` : `${t} AM`;
+                            return (
+                              <option key={t} value={t} disabled={isBooked}>
+                                {label} {isBooked ? "❌ (Occupied)" : ""}
+                              </option>
+                            );
+                          })
+                        )}
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {checkingAvailability && (
-              <div className="flex items-center text-xs text-muted-foreground pt-1">
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin text-primary" />
-                Verificando disponibilidad de horarios...
-              </div>
+                {isSunday && (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-500 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>We are closed on Sundays. Please select a date from Monday to Saturday.</span>
+                  </div>
+                )}
+
+                {checkingAvailability && (
+                  <div className="flex items-center text-xs text-muted-foreground pt-1">
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin text-primary" />
+                    Checking availability...
+                  </div>
+                )}
+              </>
             )}
 
             {/* Contact Details */}
@@ -551,7 +629,7 @@ export default function MultiStepForm() {
 
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-1">
-                  Email Address (for Google Calendar Invite) *
+                  Email Address *
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -583,23 +661,27 @@ export default function MultiStepForm() {
               </div>
             </div>
 
-            {/* Duplicate Email Warning */}
-            {emailAlreadyBooked && (
+            {/* Duplicate Email Warning in English */}
+            {!isJustLooking && emailAlreadyBooked && (
               <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-500 flex items-center gap-2.5 animate-in fade-in">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>Ya tienes una inspección agendada para este día con este correo. Elige otra fecha o contáctanos para modificarla.</span>
+                <span>You already have an appointment scheduled for this date with this email. Please select another date or contact us to reschedule.</span>
               </div>
             )}
 
             <Button
               type="submit"
-              disabled={isSubmitting || emailAlreadyBooked || bookedSlots.includes(bookingData.time)}
+              disabled={isSubmitting || (!isJustLooking && (isSunday || emailAlreadyBooked || bookedSlots.includes(bookingData.time)))}
               size="lg"
               className="w-full text-lg font-bold py-6 mt-4 group"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Scheduling...
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Processing...
+                </>
+              ) : isJustLooking ? (
+                <>
+                  Contact Me <Send className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               ) : (
                 <>
@@ -618,17 +700,21 @@ export default function MultiStepForm() {
             </div>
 
             <h3 className="text-xl font-bold text-foreground">
-              Your Inspection is Booked!
+              {isJustLooking ? "We Received Your Request!" : "Your Service is Scheduled!"}
             </h3>
 
             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              We have reserved your slot for <strong>{bookingData.date}</strong> at <strong>{bookingData.time}</strong>. An automatic Google Calendar invitation has been dispatched to <strong>{bookingData.email}</strong>.
+              {isJustLooking ? (
+                <>Thank you for reaching out, <strong>{bookingData.name}</strong>. One of our vehicle protection specialists will contact you shortly.</>
+              ) : (
+                <>We have reserved your slot for <strong>{bookingData.date}</strong> at <strong>{bookingData.time}</strong>. An automatic Google Calendar invitation has been dispatched to <strong>{bookingData.email}</strong>.</>
+              )}
             </p>
 
             <div className="p-4 bg-secondary/50 rounded-xl text-left text-xs space-y-1 max-w-sm mx-auto border border-border">
               <div><strong>Vehicle:</strong> {formData.make} {formData.model} ({formData.vehicleType})</div>
               <div><strong>Contact:</strong> {bookingData.name} ({bookingData.phone || "No phone provided"})</div>
-              <div><strong>Status:</strong> Synced with Google Calendar</div>
+              <div><strong>Status:</strong> {isJustLooking ? "Recorded in Google Sheets" : "Synced with Google Calendar"}</div>
             </div>
 
             <Button
@@ -647,7 +733,7 @@ export default function MultiStepForm() {
               variant="outline"
               className="mt-4"
             >
-              Book Another Inspection
+              Start Over
             </Button>
           </div>
         )}
