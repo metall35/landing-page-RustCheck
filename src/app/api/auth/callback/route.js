@@ -13,14 +13,14 @@ export async function GET(req) {
     }
 
     const host = req.headers.get("host");
-    const protocol = req.headers.get("x-forwarded-proto") || "http";
+    const protocol = req.headers.get("x-forwarded-proto") || "https";
     const redirectUri = `${protocol}://${host}/api/auth/callback`;
 
     const clientId = process.env.GOOGLE_CLIENT_ID || "1039666854022-rrrtiol4qcvtp0lksuna48e23hp17cq7.apps.googleusercontent.com";
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
     if (!clientSecret) {
-      return new NextResponse("Missing GOOGLE_CLIENT_SECRET in .env.local", { status: 400 });
+      return new NextResponse("Missing GOOGLE_CLIENT_SECRET in Environment Variables", { status: 400 });
     }
 
     const oauth2Client = new google.auth.OAuth2(
@@ -30,39 +30,52 @@ export async function GET(req) {
     );
 
     const { tokens } = await oauth2Client.getToken(code);
+    const refreshToken = tokens.refresh_token || "";
 
-    if (tokens.refresh_token) {
-      // 1. Save to calendar_tokens.json file in project root
-      const tokenStorePath = path.join(process.cwd(), "calendar_tokens.json");
-      fs.writeFileSync(
-        tokenStorePath,
-        JSON.stringify(
-          {
-            refresh_token: tokens.refresh_token,
-            updated_at: new Date().toISOString(),
-          },
-          null,
-          2
-        )
-      );
+    if (refreshToken) {
+      // 1. Try writing to /tmp/calendar_tokens.json (Writable in Vercel Serverless environment)
+      try {
+        const tmpPath = path.join("/tmp", "calendar_tokens.json");
+        fs.writeFileSync(
+          tmpPath,
+          JSON.stringify({ refresh_token: refreshToken, updated_at: new Date().toISOString() }, null, 2)
+        );
+      } catch (err) {
+        console.warn("Could not write to /tmp:", err);
+      }
 
-      // 2. Also save to .env.local if exists
-      const envPath = path.join(process.cwd(), ".env.local");
-      if (fs.existsSync(envPath)) {
-        let envContent = fs.readFileSync(envPath, "utf8");
-        if (envContent.includes("GOOGLE_REFRESH_TOKEN=")) {
-          envContent = envContent.replace(
-            /GOOGLE_REFRESH_TOKEN=.*/,
-            `GOOGLE_REFRESH_TOKEN=${tokens.refresh_token}`
-          );
-        } else {
-          envContent += `\nGOOGLE_REFRESH_TOKEN=${tokens.refresh_token}\n`;
+      // 2. Try writing to project root (Local dev environment)
+      try {
+        const tokenStorePath = path.join(process.cwd(), "calendar_tokens.json");
+        fs.writeFileSync(
+          tokenStorePath,
+          JSON.stringify({ refresh_token: refreshToken, updated_at: new Date().toISOString() }, null, 2)
+        );
+      } catch (err) {
+        // Ignore read-only filesystem error on Vercel
+      }
+
+      // 3. Try updating .env.local if locally writable
+      try {
+        const envPath = path.join(process.cwd(), ".env.local");
+        if (fs.existsSync(envPath)) {
+          let envContent = fs.readFileSync(envPath, "utf8");
+          if (envContent.includes("GOOGLE_REFRESH_TOKEN=")) {
+            envContent = envContent.replace(
+              /GOOGLE_REFRESH_TOKEN=.*/,
+              `GOOGLE_REFRESH_TOKEN=${refreshToken}`
+            );
+          } else {
+            envContent += `\nGOOGLE_REFRESH_TOKEN=${refreshToken}\n`;
+          }
+          fs.writeFileSync(envPath, envContent);
         }
-        fs.writeFileSync(envPath, envContent);
+      } catch (err) {
+        // Ignore read-only filesystem error on Vercel
       }
     }
 
-    // Return beautiful success page to the user/client
+    // Return confirmation page displaying token for Vercel Environment Variables
     const html = `
       <!DOCTYPE html>
       <html lang="es">
@@ -80,7 +93,7 @@ export async function GET(req) {
               justify-content: center;
               min-height: 100vh;
               margin: 0;
-              padding: 1rem;
+              padding: 1.5rem;
             }
             .card {
               background: #1e293b;
@@ -88,7 +101,7 @@ export async function GET(req) {
               padding: 2.5rem;
               border-radius: 1.25rem;
               text-align: center;
-              max-width: 440px;
+              max-width: 480px;
               box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             }
             .icon-wrapper {
@@ -124,6 +137,7 @@ export async function GET(req) {
               border-radius: 9999px;
               font-weight: 600;
               font-size: 0.875rem;
+              margin-bottom: 1.5rem;
             }
             .dot {
               width: 8px;
@@ -132,16 +146,78 @@ export async function GET(req) {
               border-radius: 50%;
               margin-right: 0.5rem;
             }
+            .token-box {
+              background: #0f172a;
+              border: 1px solid #334155;
+              padding: 1rem;
+              border-radius: 0.75rem;
+              text-align: left;
+              margin-top: 1rem;
+            }
+            .token-title {
+              font-size: 0.75rem;
+              font-weight: 600;
+              color: #38bdf8;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              margin-bottom: 0.5rem;
+            }
+            .token-input {
+              width: 100%;
+              background: transparent;
+              border: none;
+              color: #e2e8f0;
+              font-family: monospace;
+              font-size: 0.8rem;
+              word-break: break-all;
+            }
+            .btn {
+              background: #0284c7;
+              color: white;
+              border: none;
+              padding: 0.6rem 1.2rem;
+              border-radius: 0.5rem;
+              font-weight: 600;
+              font-size: 0.85rem;
+              cursor: pointer;
+              margin-top: 0.75rem;
+              width: 100%;
+              transition: background 0.2s;
+            }
+            .btn:hover {
+              background: #0369a1;
+            }
           </style>
         </head>
         <body>
           <div class="card">
             <div class="icon-wrapper">📅</div>
             <h1>¡Google Calendar Vinculado!</h1>
-            <p>Tu cuenta se ha conectado exitosamente. Todas las inspecciones de vehículos agendadas por clientes en la landing page aparecerán de forma automática en tu Google Calendar.</p>
+            <p>Tu cuenta se ha conectado exitosamente. Las inspecciones de vehículos agendadas por clientes se sincronizarán directamente en tu Google Calendar.</p>
+            
             <div class="status-badge">
-              <span class="dot"></span> Sincronización Automática Activa
+              <span class="dot"></span> Vinculación Lista
             </div>
+
+            ${
+              refreshToken
+                ? `
+              <div class="token-box">
+                <div class="token-title">Para guardar permanentemente en Vercel:</div>
+                <input type="text" readonly value="${refreshToken}" class="token-input" id="tokenField" />
+                <button onclick="copyToken()" class="btn" id="copyBtn">📋 Copiar GOOGLE_REFRESH_TOKEN</button>
+              </div>
+              <script>
+                function copyToken() {
+                  var copyText = document.getElementById("tokenField");
+                  copyText.select();
+                  navigator.clipboard.writeText(copyText.value);
+                  document.getElementById("copyBtn").innerText = "✓ ¡Copiado al Portapapeles!";
+                }
+              </script>
+            `
+                : ""
+            }
           </div>
         </body>
       </html>

@@ -12,12 +12,17 @@ async function getGoogleCalendarClient() {
   let activeRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
   const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
 
-  // Check if refresh token was generated via Magic Link and saved to calendar_tokens.json
+  // Check if refresh token was generated via Magic Link and saved to /tmp or calendar_tokens.json
   if (!activeRefreshToken) {
     try {
-      const tokenStorePath = path.join(process.cwd(), "calendar_tokens.json");
-      if (fs.existsSync(tokenStorePath)) {
-        const fileData = JSON.parse(fs.readFileSync(tokenStorePath, "utf8"));
+      const tmpPath = path.join("/tmp", "calendar_tokens.json");
+      const rootPath = path.join(process.cwd(), "calendar_tokens.json");
+      
+      if (fs.existsSync(tmpPath)) {
+        const fileData = JSON.parse(fs.readFileSync(tmpPath, "utf8"));
+        activeRefreshToken = fileData.refresh_token;
+      } else if (fs.existsSync(rootPath)) {
+        const fileData = JSON.parse(fs.readFileSync(rootPath, "utf8"));
         activeRefreshToken = fileData.refresh_token;
       }
     } catch (err) {
