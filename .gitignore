@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+*.json
+!package*.json
+!tsconfig.json
+!jsconfig.json
+!components.json
 
 # vercel
 .vercel

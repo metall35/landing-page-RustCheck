@@ -39,7 +39,11 @@ export const metadata = {
   },
 };
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 export default function RootLayout({ children }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html
       lang="en"
@@ -55,6 +59,7 @@ export default function RootLayout({ children }) {
         >
           {children}
         </ThemeProvider>
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
