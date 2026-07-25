@@ -79,16 +79,16 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
     });
   }, [fbx]);
 
-  // Coordinates relative to 3D car geometry (underbody & dispersed layout):
-  // 1. Front of car between two front wheels: [0, -0.22, 1.05] -> Label 1
-  // 2. Brakes & wheel hub area: [0.68, -0.22, 0.35] -> Label 2
-  // 3. Further back underbody frame: [0.55, -0.28, -0.4] -> Label 3
-  // 4. Rear tail of the car: [0, -0.15, -1.25] -> Label 4
+  // Coordinates mapped exactly to user's annotated diagram:
+  // 1: Front nose / lower front bumper: [0, -0.15, 1.25]
+  // 2: Middle side sill / door rocker panel underbody: [0.6, -0.28, 0.1]
+  // 3: Rear quarter panel / rear wheel area: [0.65, -0.2, -0.65]
+  // 4: Trunk / rear wing area: [0.2, 0.25, -1.1]
   const hotspots = [
-    { index: 0, label: "1", pos: [0, -0.22, 1.05], lineClass: "down" },
-    { index: 2, label: "2", pos: [0.68, -0.22, 0.35], lineClass: "down" },
-    { index: 1, label: "3", pos: [0.55, -0.28, -0.4], lineClass: "down" },
-    { index: 3, label: "4", pos: [0, -0.15, -1.25], lineClass: "down" }
+    { index: 0, label: "1", pos: [0, -0.15, 1.25], lineClass: "down" },
+    { index: 1, label: "2", pos: [0.6, -0.28, 0.1], lineClass: "down" },
+    { index: 2, label: "3", pos: [0.65, -0.2, -0.65], lineClass: "down" },
+    { index: 3, label: "4", pos: [0.2, 0.25, -1.1], lineClass: "up" }
   ];
 
   return (

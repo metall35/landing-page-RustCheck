@@ -19,6 +19,8 @@ export default function PricingCards() {
         "Door Seams & Crevices",
         "Engine Compartment Protection",
         "Electrical Terminals Shield",
+        "Wheel Wells Protection",
+        "Underside of trunk lid",
         "Lifetime Warranty Policy"
       ]
     },
@@ -35,8 +37,9 @@ export default function PricingCards() {
         "Door Seams & Crevices",
         "Engine Compartment Protection",
         "Electrical Terminals Shield",
-        "Lifetime Warranty Policy",
-        "Wheel Wells Protection"
+        "Wheel Wells Protection",
+        "Rear hatch",
+        "Lifetime Warranty Policy"
       ]
     },
     {
@@ -52,8 +55,9 @@ export default function PricingCards() {
         "Door Seams & Crevices",
         "Engine Compartment & Frame Rails",
         "Electrical Terminals Shield",
-        "Lifetime Warranty Policy",
-        "Tailgate & Bed Junctions"
+        "Wheel Wells Protection",
+        "Tailgate & Bed Junctions",
+        "Lifetime Warranty Policy"
       ]
     }
   ];
