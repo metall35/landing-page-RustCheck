@@ -21,7 +21,6 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Coverage", href: "#coverage" },
-    { name: "Why Us", href: "#why-us" },
     { name: "Trust", href: "#trust" },
     { name: "Reviews", href: "#reviews" },
   ];

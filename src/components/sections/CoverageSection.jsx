@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import contentData from "@/data/content.json";
-import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Loader2, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -105,7 +105,7 @@ export default function CoverageSection() {
           className="mt-16 max-w-4xl mx-auto p-6 rounded-2xl border border-primary/20 bg-primary/5 backdrop-blur flex flex-col sm:flex-row items-center gap-5 shadow-sm"
         >
           <div className="p-3.5 bg-primary/10 text-primary rounded-full shrink-0 flex items-center justify-center">
-            <ShieldCheck className="w-8 h-8" />
+            <Zap className="w-8 h-8" />
           </div>
           <div className="space-y-1.5 text-center sm:text-left">
             <h4 className="font-bold text-lg text-foreground flex items-center justify-center sm:justify-start gap-2">

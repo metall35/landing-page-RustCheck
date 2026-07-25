@@ -79,21 +79,21 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
     });
   }, [fbx]);
 
-  // Coordinates are aligned relative to the Porsche 3D model geometry:
-  // 1. Engine & Transmission: [0, 0.22, 0.95] (front hood)
-  // 2. Brakes & Lines: [0.65, -0.15, 0.55] (front wheel hub) -> Label 2, Index 2
-  // 3. Frame & Chassis: [0.55, -0.25, 0.0] (side frame rail/sill) -> Label 3, Index 1
-  // 4. Body Panels: [0.65, 0.15, -0.25] (side door panel) -> Label 4, Index 3
+  // Coordinates relative to 3D car geometry (underbody & dispersed layout):
+  // 1. Front of car between two front wheels: [0, -0.22, 1.05] -> Label 1
+  // 2. Brakes & wheel hub area: [0.68, -0.22, 0.35] -> Label 2
+  // 3. Further back underbody frame: [0.55, -0.28, -0.4] -> Label 3
+  // 4. Rear tail of the car: [0, -0.15, -1.25] -> Label 4
   const hotspots = [
-    { index: 0, label: "1", pos: [0, 0.22, 0.95], lineClass: "up" },
-    { index: 2, label: "2", pos: [0.65, -0.15, 0.55], lineClass: "up" },
-    { index: 1, label: "3", pos: [0.55, -0.25, 0.0], lineClass: "down" },
-    { index: 3, label: "4", pos: [0.4, 0.2, -0.85], lineClass: "up" }
+    { index: 0, label: "1", pos: [0, -0.22, 1.05], lineClass: "down" },
+    { index: 2, label: "2", pos: [0.68, -0.22, 0.35], lineClass: "down" },
+    { index: 1, label: "3", pos: [0.55, -0.28, -0.4], lineClass: "down" },
+    { index: 3, label: "4", pos: [0, -0.15, -1.25], lineClass: "down" }
   ];
 
   return (
     <group>
-      <primitive object={fbx} />
+      <primitive object={fbx} rotation={[0, -Math.PI / 10, 0]} />
       {hotspots.map((spot) => {
         const isActive = activeCategory === spot.index;
         return (
