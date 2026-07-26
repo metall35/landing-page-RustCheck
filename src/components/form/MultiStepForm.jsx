@@ -763,17 +763,9 @@ export default function MultiStepForm() {
             </h3>
 
             {/* Center Image Container (for vehicle / brand image) */}
-            <div className="relative w-full max-w-sm h-48 aspect-[4/3] mx-auto rounded-2xl overflow-hidden border border-border shadow-md flex items-center justify-center p-3 group">
+            <div className="relative w-full max-w-sm aspect-[4/3] mx-auto rounded-2xl overflow-hidden border border-border shadow-md flex items-center justify-center p-3 group">
               <img 
-                src={
-                  formData.vehicleType === "sedan" 
-                    ? "/civic.png" 
-                    : formData.vehicleType === "suv" 
-                    ? "/rav4.png" 
-                    : formData.vehicleType === "pickup" 
-                    ? "/f150.png" 
-                    : "/LogoRustCheck.svg"
-                } 
+                src="/Thank You Page - Rust Check.gif" 
                 alt="Selected Vehicle" 
                 className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
               />
