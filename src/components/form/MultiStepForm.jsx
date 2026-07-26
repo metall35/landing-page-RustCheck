@@ -744,23 +744,44 @@ export default function MultiStepForm() {
 
         {/* STEP 8: High-Converting Thank You / Confirmation Screen */}
         {step === 8 && (
-          <div className="text-center py-6 space-y-5 animate-in zoom-in-95 duration-300">
-            <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto border border-primary/20 shadow-inner">
-              <CalendarCheck className="w-10 h-10" />
+          <div className="text-center py-4 space-y-4 animate-in zoom-in-95 duration-300">
+            {/* Top Icon Badge */}
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto border border-primary/20 shadow-inner">
+              <CalendarCheck className="w-8 h-8" />
             </div>
 
+            {/* Red Pill Badge */}
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                {isJustLooking ? "Request Received" : "Appointment Scheduled"}
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/25 shadow-xs inline-block">
+                {isJustLooking ? "REQUEST RECEIVED" : "APPOINTMENT SCHEDULED"}
               </span>
-              <h3 className="text-2xl font-black text-foreground mt-2">
-                {isJustLooking ? "We'll Be In Touch Shortly!" : "Your Inspection is Scheduled!"}
-              </h3>
+            </div>
+
+            {/* Headline */}
+            <h3 className="text-2xl font-black text-foreground tracking-tight">
+              {isJustLooking ? "Thank you for contacting us" : "Thank you for booking your appointment"}
+            </h3>
+
+            {/* Center Image Container (for vehicle / brand image) */}
+            <div className="relative w-full max-w-sm h-48 mx-auto rounded-2xl overflow-hidden border border-border shadow-md bg-zinc-900/90 flex items-center justify-center p-3 group">
+              <img 
+                src={
+                  formData.vehicleType === "sedan" 
+                    ? "/civic.png" 
+                    : formData.vehicleType === "suv" 
+                    ? "/rav4.png" 
+                    : formData.vehicleType === "pickup" 
+                    ? "/f150.png" 
+                    : "/LogoRustCheck.svg"
+                } 
+                alt="Selected Vehicle" 
+                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
 
             {/* 24-Hour Prior Notice Alert Box */}
-            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-2 max-w-md mx-auto shadow-sm">
-              <div className="flex items-center gap-2 font-bold text-amber-500 text-sm">
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-2 max-w-sm mx-auto shadow-sm">
+              <div className="flex items-center gap-2 font-bold text-amber-500 text-xs">
                 <Clock className="w-4 h-4 shrink-0" />
                 <span>24-Hour Confirmation Notice</span>
               </div>
@@ -773,8 +794,8 @@ export default function MultiStepForm() {
             </div>
 
             {/* Booking Details Box */}
-            <div className="p-4 bg-secondary/50 rounded-2xl text-left text-xs space-y-1.5 max-w-md mx-auto border border-border">
-              <div><strong>Vehicle:</strong> {formData.make} {formData.model} ({formData.vehicleType})</div>
+            <div className="p-4 bg-secondary/50 rounded-2xl text-left text-xs space-y-1.5 max-w-sm mx-auto border border-border">
+              <div><strong>Vehicle:</strong> {formData.make || "N/A"} {formData.model || ""} ({formData.vehicleType || "Vehicle"})</div>
               {!isJustLooking && (
                 <div><strong>Scheduled Date & Time:</strong> {bookingData.date} at {formatSlotLabel(bookingData.time)}</div>
               )}
@@ -796,7 +817,7 @@ export default function MultiStepForm() {
                 });
               }}
               variant="outline"
-              className="mt-4 font-bold"
+              className="mt-2 font-bold"
             >
               Book Another Inspection
             </Button>
