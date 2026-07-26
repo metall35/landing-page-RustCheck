@@ -80,15 +80,15 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
   }, [fbx]);
 
   // Coordinates mapped exactly to user's annotated diagram:
-  // 1: Front nose / lower front bumper: [0, -0.15, 1.25]
-  // 2: Middle side sill / door rocker panel underbody: [0.6, -0.28, 0.1]
-  // 3: Rear quarter panel / rear wheel area: [0.65, -0.2, -0.65]
-  // 4: Trunk / rear wing area: [0.2, 0.25, -1.1]
+  // 1: Front wheel & lower bumper area: [0.65, -0.22, 0.65]
+  // 2: Middle side sill & door rocker panel: [0.62, -0.28, 0.05]
+  // 3: Rear wheel well & lower quarter panel: [0.65, -0.22, -0.65]
+  // 4: Rear deck, trunk lid & spoiler: [0.15, 0.28, -1.05]
   const hotspots = [
-    { index: 0, label: "1", pos: [0, -0.15, 1.25], lineClass: "down" },
-    { index: 1, label: "2", pos: [0.6, -0.28, 0.1], lineClass: "down" },
-    { index: 2, label: "3", pos: [0.65, -0.2, -0.65], lineClass: "down" },
-    { index: 3, label: "4", pos: [0.2, 0.25, -1.1], lineClass: "up" }
+    { index: 0, label: "1", pos: [0.65, -0.22, 0.65], lineClass: "down" },
+    { index: 1, label: "2", pos: [0.62, -0.28, 0.05], lineClass: "down" },
+    { index: 2, label: "3", pos: [0.65, -0.22, -0.65], lineClass: "down" },
+    { index: 3, label: "4", pos: [0.15, 0.28, -1.05], lineClass: "up" }
   ];
 
   return (

@@ -268,7 +268,7 @@ Scheduled via Rust Check Online Form.
         useDefault: false,
         overrides: [
           { method: "email", minutes: 24 * 60 },
-          { method: "popup", minutes: 60 },
+          { method: "popup", minutes: 3 * 60 },
         ],
       },
     };

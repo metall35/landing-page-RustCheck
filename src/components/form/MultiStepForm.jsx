@@ -15,22 +15,33 @@ const STEP_NAMES = [
   "Keep Duration",
   "Rust Condition",
   "Previous Protection",
-  "Timeframe Urgency",
+  "Scheduling Option",
   "Schedule / Contact",
   "Confirmation"
 ];
 
+// Helper: Calculate earliest allowed date (at least 2 days / 48h buffer, skipping Sundays)
+export function getMinBookingDate() {
+  const today = new Date();
+  const minDate = new Date(today);
+  minDate.setDate(today.getDate() + 2); // 48h buffer: if booking today, tomorrow is blocked
+  if (minDate.getDay() === 0) { // If Sunday, push to Monday
+    minDate.setDate(minDate.getDate() + 1);
+  }
+  return minDate.toISOString().split("T")[0];
+}
+
 // Helper: Get available time slots by day of week
-// Mon-Fri (1-5): 10:00, 11:00, 13:00
-// Sat (6): 10:00, 11:00
+// Mon-Fri (1-5): 09:00, 13:00, 16:00 (9am, 1pm, 4pm)
+// Sat (6): 09:00, 13:00 (9am, 1pm)
 // Sun (0): OFF
 export function getTimeSlotsForDate(dateStr) {
   if (!dateStr) return [];
   const d = new Date(`${dateStr}T00:00:00`);
   const day = d.getDay();
   if (day === 0) return []; // Sunday: OFF
-  if (day === 6) return ["10:00", "11:00"]; // Saturday: 10 AM, 11 AM
-  return ["10:00", "11:00", "13:00"]; // Mon - Fri: 10 AM, 11 AM, 1 PM
+  if (day === 6) return ["09:00", "13:00"]; // Saturday: 9 AM, 1 PM
+  return ["09:00", "13:00", "16:00"]; // Mon - Fri: 9 AM, 1 PM, 4 PM
 }
 
 export default function MultiStepForm() {
@@ -42,15 +53,17 @@ export default function MultiStepForm() {
     duration: "",
     rustCondition: "",
     previousProtection: "",
-    timeframe: ""
+    timeframe: "book"
   });
+
+  const minDateStr = getMinBookingDate();
 
   const [bookingData, setBookingData] = useState({
     name: "",
     email: "",
     phone: "",
-    date: new Date().toISOString().split("T")[0],
-    time: "10:00"
+    date: minDateStr,
+    time: "09:00"
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -220,12 +233,20 @@ export default function MultiStepForm() {
     { id: "lots", label: "Lots of rust", icon: Frown },
   ];
 
-  // Step 6: Timeframe
+  // Step 6: Options (Replaced with "Book Appointment" and "We Contact You")
   const timeframes = [
-    { id: "asap", label: "ASAP", icon: Calendar },
-    { id: "week", label: "Within a week", icon: Calendar },
-    { id: "future", label: "Near future", icon: Calendar },
-    { id: "looking", label: "Just looking", icon: Search },
+    { 
+      id: "book", 
+      label: "Book Appointment", 
+      sublabel: "Select your date & time online",
+      icon: CalendarCheck 
+    },
+    { 
+      id: "looking", 
+      label: "We Contact You", 
+      sublabel: "Looking for a specific time? We'll call you",
+      icon: Phone 
+    },
   ];
 
   const handleTimeframeSelect = (tId) => {
@@ -248,7 +269,7 @@ export default function MultiStepForm() {
     setIsSubmitting(true);
     try {
       if (isJustLooking) {
-        // Submit lead to Google Sheets (Just Looking)
+        // Submit lead to Google Sheets (We Contact You)
         const res = await fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -298,7 +319,12 @@ export default function MultiStepForm() {
     }
   };
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const formatSlotLabel = (t) => {
+    if (t === "09:00") return "9:00 AM";
+    if (t === "13:00") return "1:00 PM";
+    if (t === "16:00") return "4:00 PM";
+    return t;
+  };
 
   return (
     <Card className="w-full max-w-lg mx-auto shadow-2xl border-none ring-1 ring-primary/20 bg-background/95 backdrop-blur">
@@ -319,10 +345,17 @@ export default function MultiStepForm() {
           {step === 3 && "How long do you plan to keep your vehicle?"}
           {step === 4 && "What condition is your vehicle in?"}
           {step === 5 && "Have you ever used any type of rust protection?"}
-          {step === 6 && "When are you planning to have your vehicle checked?"}
-          {step === 7 && (isJustLooking ? "Let Us Contact You" : "Select Date & Time for Your Service")}
-          {step === 8 && (isJustLooking ? "Thank You!" : "Appointment Confirmed!")}
+          {step === 6 && "How would you like to proceed?"}
+          {step === 7 && (isJustLooking ? "Looking for a Specific Time?" : "Select Date & Time for Your Inspection")}
+          {step === 8 && (isJustLooking ? "Request Received!" : "Cita Agendada / Appointment Scheduled")}
         </CardTitle>
+
+        {step === 7 && isJustLooking && (
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto leading-relaxed">
+            Didn't find the exact time you were looking for? Leave your contact details below and we will call you directly to arrange your inspection.
+          </p>
+        )}
+
         {step <= 7 && (
           <div className="w-full bg-secondary h-2 mt-4 rounded-full overflow-hidden">
             <div className="bg-primary h-full transition-all duration-500 ease-in-out" style={{ width: `${(step / 7) * 100}%` }} />
@@ -516,7 +549,7 @@ export default function MultiStepForm() {
 
         {/* STEP 6 */}
         {step === 6 && (
-          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4">
+          <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4">
             {timeframes.map((t) => {
               const Icon = t.icon;
               const isSelected = formData.timeframe === t.id;
@@ -524,12 +557,17 @@ export default function MultiStepForm() {
                 <button
                   key={t.id}
                   onClick={() => handleTimeframeSelect(t.id)}
-                  className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 ${
-                    isSelected ? "border-primary bg-primary/10 scale-105" : "border-border hover:border-primary/50 hover:bg-secondary/50"
+                  className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 ${
+                    isSelected ? "border-primary bg-primary/10 scale-[1.01]" : "border-border hover:border-primary/50 hover:bg-secondary/50"
                   }`}
                 >
-                  <Icon className={`w-8 h-8 mb-3 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                  <span className="font-semibold text-sm">{t.label}</span>
+                  <div className={`p-3 rounded-xl shrink-0 ${isSelected ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base text-foreground">{t.label}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t.sublabel}</p>
+                  </div>
                 </button>
               );
             })}
@@ -540,19 +578,19 @@ export default function MultiStepForm() {
         {step === 7 && (
           <form onSubmit={handleScheduleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             
-            {/* Date & Time Selection (Hidden if "Just Looking") */}
+            {/* Date & Time Selection (Hidden if "We Contact You") */}
             {!isJustLooking && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-muted-foreground mb-1">
-                      Select Date
+                      Select Date (Min. 48h advance)
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <input
                         type="date"
-                        min={todayStr}
+                        min={minDateStr}
                         value={bookingData.date}
                         onChange={(e) => updateBooking("date", e.target.value)}
                         required
@@ -579,7 +617,7 @@ export default function MultiStepForm() {
                         ) : (
                           availableTimeSlots.map((t) => {
                             const isBooked = bookedSlots.includes(t);
-                            const label = t === "12:00" ? "12:00 PM" : Number(t.split(":")[0]) > 12 ? `${Number(t.split(":")[0]) - 12}:00 PM` : `${t} AM`;
+                            const label = formatSlotLabel(t);
                             return (
                               <option key={t} value={t} disabled={isBooked}>
                                 {label} {isBooked ? "❌ (Occupied)" : ""}
@@ -692,29 +730,44 @@ export default function MultiStepForm() {
           </form>
         )}
 
-        {/* STEP 8: Confirmation Screen */}
+        {/* STEP 8: High-Converting Thank You / Confirmation Screen */}
         {step === 8 && (
-          <div className="text-center py-6 space-y-4 animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto">
+          <div className="text-center py-6 space-y-5 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto border border-primary/20 shadow-inner">
               <CalendarCheck className="w-10 h-10" />
             </div>
 
-            <h3 className="text-xl font-bold text-foreground">
-              {isJustLooking ? "We Received Your Request!" : "Your Service is Scheduled!"}
-            </h3>
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                {isJustLooking ? "Request Received" : "Cita Agendada / Appointment Scheduled"}
+              </span>
+              <h3 className="text-2xl font-black text-foreground mt-2">
+                {isJustLooking ? "We'll Be In Touch Shortly!" : "Your Inspection is Scheduled!"}
+              </h3>
+            </div>
 
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              {isJustLooking ? (
-                <>Thank you for reaching out, <strong>{bookingData.name}</strong>. One of our vehicle protection specialists will contact you shortly.</>
-              ) : (
-                <>We have reserved your slot for <strong>{bookingData.date}</strong> at <strong>{bookingData.time}</strong>. An automatic Google Calendar invitation has been dispatched to <strong>{bookingData.email}</strong>.</>
-              )}
-            </p>
+            {/* 24-Hour Prior Notice Alert Box */}
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-2 max-w-md mx-auto shadow-sm">
+              <div className="flex items-center gap-2 font-bold text-amber-500 text-sm">
+                <Clock className="w-4 h-4 shrink-0" />
+                <span>24-Hour Confirmation Notice</span>
+              </div>
+              <p className="text-xs text-foreground/90 leading-relaxed font-medium">
+                We will contact you <strong>24 hours prior</strong> to your scheduled inspection to confirm your appointment.
+              </p>
+              <p className="text-[11px] text-amber-500 font-semibold italic border-t border-amber-500/20 pt-1.5">
+                * Please note: Unconfirmed appointments will be automatically cancelled.
+              </p>
+            </div>
 
-            <div className="p-4 bg-secondary/50 rounded-xl text-left text-xs space-y-1 max-w-sm mx-auto border border-border">
+            {/* Booking Details Box */}
+            <div className="p-4 bg-secondary/50 rounded-2xl text-left text-xs space-y-1.5 max-w-md mx-auto border border-border">
               <div><strong>Vehicle:</strong> {formData.make} {formData.model} ({formData.vehicleType})</div>
-              <div><strong>Contact:</strong> {bookingData.name} ({bookingData.phone || "No phone provided"})</div>
-              <div><strong>Status:</strong> {isJustLooking ? "Recorded in Google Sheets" : "Synced with Google Calendar"}</div>
+              {!isJustLooking && (
+                <div><strong>Scheduled Date & Time:</strong> {bookingData.date} at {formatSlotLabel(bookingData.time)}</div>
+              )}
+              <div><strong>Contact:</strong> {bookingData.name} ({bookingData.email})</div>
+              <div><strong>Status:</strong> {isJustLooking ? "Saved in Google Sheets" : "Synced with Google Calendar (24h & 3h Reminders Set)"}</div>
             </div>
 
             <Button
@@ -727,13 +780,13 @@ export default function MultiStepForm() {
                   duration: "",
                   rustCondition: "",
                   previousProtection: "",
-                  timeframe: ""
+                  timeframe: "book"
                 });
               }}
               variant="outline"
-              className="mt-4"
+              className="mt-4 font-bold"
             >
-              Start Over
+              Book Another Inspection
             </Button>
           </div>
         )}
