@@ -379,7 +379,7 @@ export default function MultiStepForm() {
                   <img 
                     src={type.iconSrc} 
                     alt={type.label} 
-                    className={`${type.iconClass || "w-14 h-14"} mb-3 object-contain transition-all duration-200 ${isSelected ? "" : "opacity-70 group-hover:opacity-100"}`} 
+                    className={`${type.iconClass || "w-14 h-14"} mb-3 object-contain transition-all duration-200 dark:invert dark:brightness-200 ${isSelected ? "" : "opacity-70 group-hover:opacity-100"}`} 
                   />
                   <span className={`font-semibold text-sm transition-colors ${isSelected ? "text-primary" : "text-foreground"}`}>{type.label}</span>
                 </button>
@@ -763,7 +763,7 @@ export default function MultiStepForm() {
             </h3>
 
             {/* Center Image Container (for vehicle / brand image) */}
-            <div className="relative w-full max-w-sm h-48 mx-auto rounded-2xl overflow-hidden border border-border shadow-md bg-zinc-900/90 flex items-center justify-center p-3 group">
+            <div className="relative w-full max-w-sm h-48 aspect-[4/3] mx-auto rounded-2xl overflow-hidden border border-border shadow-md flex items-center justify-center p-3 group">
               <img 
                 src={
                   formData.vehicleType === "sedan" 
