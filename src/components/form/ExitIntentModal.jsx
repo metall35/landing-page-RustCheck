@@ -62,16 +62,16 @@ export default function ExitIntentModal({ step, hasStartedForm, onConfirmLeave }
 
         {/* Title & Body */}
         <h3 className="text-2xl font-bold tracking-tight text-foreground mb-2">
-          ¿Seguro que deseas salir?
+          Are you sure you want to leave?
         </h3>
         <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-          ¡Estás a solo un paso de extender la vida útil de tu vehículo y protegerlo contra la corrosión! Si te vas ahora, perderás tu avance.
+          You are just one step away from protecting your vehicle against rust and extending its lifespan! If you leave now, your progress will be lost.
         </p>
 
         {/* Value Proposition Box */}
         <div className="flex items-center gap-3 p-3.5 mb-6 rounded-xl bg-primary/10 border border-primary/20 text-left text-xs font-medium text-foreground">
           <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
-          <span>Cotización 100% gratuita y sin compromiso en menos de 1 minuto.</span>
+          <span>100% Free, no-obligation quote in less than 1 minute.</span>
         </div>
 
         {/* Action Buttons */}
@@ -81,7 +81,7 @@ export default function ExitIntentModal({ step, hasStartedForm, onConfirmLeave }
             onClick={handleKeepFilling}
             className="w-full font-bold py-6 text-base shadow-lg shadow-primary/20 group"
           >
-            Continuar con mi Cotización
+            Continue My Quote
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
 
@@ -89,7 +89,7 @@ export default function ExitIntentModal({ step, hasStartedForm, onConfirmLeave }
             onClick={handleLeaveAnyway}
             className="w-full py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
           >
-            Abandonar de todos modos
+            Leave anyway
           </button>
         </div>
       </div>
