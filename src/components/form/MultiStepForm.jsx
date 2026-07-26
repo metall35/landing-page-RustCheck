@@ -233,18 +233,16 @@ export default function MultiStepForm() {
     { id: "lots", label: "Lots of rust", icon: Frown },
   ];
 
-  // Step 6: Options (Replaced with "Book Appointment" and "We Contact You")
+  // Step 6: Options (Clean labels without subtitles)
   const timeframes = [
     { 
       id: "book", 
       label: "Book Appointment", 
-      sublabel: "Select your date & time online",
       icon: CalendarCheck 
     },
     { 
       id: "looking", 
       label: "We Contact You", 
-      sublabel: "Looking for a specific time? We'll call you",
       icon: Phone 
     },
   ];
@@ -346,13 +344,13 @@ export default function MultiStepForm() {
           {step === 4 && "What condition is your vehicle in?"}
           {step === 5 && "Have you ever used any type of rust protection?"}
           {step === 6 && "How would you like to proceed?"}
-          {step === 7 && (isJustLooking ? "Looking for a Specific Time?" : "Select Date & Time for Your Inspection")}
-          {step === 8 && (isJustLooking ? "Request Received!" : "Cita Agendada / Appointment Scheduled")}
+          {step === 7 && (isJustLooking ? "We Contact You" : "Select Date & Time for Your Inspection")}
+          {step === 8 && (isJustLooking ? "Request Received!" : "Appointment Scheduled!")}
         </CardTitle>
 
         {step === 7 && isJustLooking && (
-          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto leading-relaxed">
-            Didn't find the exact time you were looking for? Leave your contact details below and we will call you directly to arrange your inspection.
+          <p className="text-xs text-muted-foreground mt-1.5 max-w-sm mx-auto leading-relaxed font-medium">
+            Provide your contact details below and one of our specialists will reach out as soon as possible to confirm your preferred schedule.
           </p>
         )}
 
@@ -547,7 +545,7 @@ export default function MultiStepForm() {
           </div>
         )}
 
-        {/* STEP 6 */}
+        {/* STEP 6 (Clean minimalist buttons without subtitles) */}
         {step === 6 && (
           <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4">
             {timeframes.map((t) => {
@@ -557,17 +555,14 @@ export default function MultiStepForm() {
                 <button
                   key={t.id}
                   onClick={() => handleTimeframeSelect(t.id)}
-                  className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 ${
+                  className={`flex items-center gap-4 p-6 rounded-2xl border-2 text-left transition-all duration-200 ${
                     isSelected ? "border-primary bg-primary/10 scale-[1.01]" : "border-border hover:border-primary/50 hover:bg-secondary/50"
                   }`}
                 >
-                  <div className={`p-3 rounded-xl shrink-0 ${isSelected ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
+                  <div className={`p-3.5 rounded-xl shrink-0 ${isSelected ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-base text-foreground">{t.label}</h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">{t.sublabel}</p>
-                  </div>
+                  <span className="font-bold text-lg text-foreground">{t.label}</span>
                 </button>
               );
             })}
@@ -643,11 +638,28 @@ export default function MultiStepForm() {
                     Checking availability...
                   </div>
                 )}
+
+                {/* Callout Banner: Didn't find your time? We contact you! */}
+                <div className="p-3.5 bg-secondary/60 border border-border rounded-xl flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-muted-foreground font-medium">
+                      Looking for a specific time? We'll call you!
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => updateForm("timeframe", "looking")}
+                    className="text-primary font-bold hover:underline shrink-0 text-xs flex items-center"
+                  >
+                    Request Call →
+                  </button>
+                </div>
               </>
             )}
 
             {/* Contact Details */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3 pt-1">
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-1">
                   Full Name *
@@ -739,7 +751,7 @@ export default function MultiStepForm() {
 
             <div>
               <span className="text-xs font-extrabold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                {isJustLooking ? "Request Received" : "Cita Agendada / Appointment Scheduled"}
+                {isJustLooking ? "Request Received" : "Appointment Scheduled"}
               </span>
               <h3 className="text-2xl font-black text-foreground mt-2">
                 {isJustLooking ? "We'll Be In Touch Shortly!" : "Your Inspection is Scheduled!"}
