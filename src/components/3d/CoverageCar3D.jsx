@@ -79,16 +79,12 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
     });
   }, [fbx]);
 
-  // Coordinates mapped exactly to user's annotated diagram:
-  // 1: Front wheel & lower bumper area: [0.65, -0.22, 0.65]
-  // 2: Middle side sill & door rocker panel: [0.62, -0.28, 0.05]
-  // 3: Rear wheel well & lower quarter panel: [0.65, -0.22, -0.65]
-  // 4: Rear deck, trunk lid & spoiler: [0.15, 0.28, -1.05]
+  // Coordinates set precisely by user via 3D Modulator tool:
   const hotspots = [
-    { index: 0, label: "1", pos: [0.65, -0.22, 0.65], lineClass: "down" },
-    { index: 1, label: "2", pos: [0.62, -0.28, 0.05], lineClass: "down" },
-    { index: 2, label: "3", pos: [0.65, -0.22, -0.65], lineClass: "down" },
-    { index: 3, label: "4", pos: [0.15, 0.28, -1.05], lineClass: "up" }
+    { index: 0, label: "1", pos: [-3.15, -1.02, 0.7], lineClass: "down" },
+    { index: 1, label: "2", pos: [-0.08, -0.38, 0.05], lineClass: "down" },
+    { index: 2, label: "3", pos: [0.65, -0.17, -1.2], lineClass: "down" },
+    { index: 3, label: "4", pos: [0.15, -0.32, -3.7], lineClass: "up" }
   ];
 
   return (
@@ -104,11 +100,6 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
             className="pointer-events-none select-none"
           >
             <div className="relative pointer-events-auto flex items-center justify-center">
-              {/* 
-                Center Anchor Dot:
-                Positioned absolutely at the center (left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2)
-                so that the dot is exactly on the 3D coordinate point.
-              */}
               <div 
                 onClick={() => setActiveCategory(spot.index)}
                 className={`absolute w-3.5 h-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer border-2 border-white shadow-md transition-all duration-300 z-30 ${
@@ -116,12 +107,7 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
                 }`}
               />
 
-              {/* 
-                Connector Line & Numbered Badge:
-                Offsets from the center dot based on pointing direction.
-              */}
               {spot.lineClass === "down" ? (
-                // Line goes DOWN from anchor dot to badge
                 <div className="absolute top-[7px] flex flex-col items-center z-20">
                   <div className={`w-0.5 h-6 bg-primary/70 transition-all duration-300 origin-top ${isActive ? "h-9 bg-primary" : ""}`} />
                   <button
@@ -136,7 +122,6 @@ function CarModelWithHotspots({ activeCategory, setActiveCategory }) {
                   </button>
                 </div>
               ) : (
-                // Line goes UP from anchor dot to badge
                 <div className="absolute bottom-[7px] flex flex-col-reverse items-center z-20">
                   <div className={`w-0.5 h-6 bg-primary/70 transition-all duration-300 origin-bottom ${isActive ? "h-9 bg-primary" : ""}`} />
                   <button
