@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import contentData from "@/data/content.json";
 import { CheckCircle2, Loader2, Zap } from "lucide-react";
 import { motion } from "framer-motion";

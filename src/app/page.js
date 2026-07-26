@@ -4,7 +4,6 @@ import PricingCards from "@/components/sections/PricingCards";
 import MultiStepForm from "@/components/form/MultiStepForm";
 import CoverageSection from "@/components/sections/CoverageSection";
 import TrustSection from "@/components/sections/TrustSection";
-import WhyChooseUsSection from "@/components/sections/WhyChooseUsSection";
 import PreventionCarousel from "@/components/sections/PreventionCarousel";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ContactLocation from "@/components/sections/ContactLocation";

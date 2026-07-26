@@ -19,7 +19,7 @@ export default function Footer() {
             />
           </Link>
           <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-            The nation's most reliable auto protection. Engineered to fight rust, built for Canadian weather.
+            The nation&apos;s most reliable auto protection. Engineered to fight rust, built for Canadian weather.
           </p>
         </div>
 

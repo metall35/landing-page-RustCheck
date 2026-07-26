@@ -68,7 +68,7 @@ export default function HeroSection() {
                 <div className="mr-3 p-1.5 rounded-full bg-primary/15 text-primary shadow-sm">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                Built for Canada's harsh weather
+                Built for Canada&apos;s harsh weather
               </li>
             </ul>
 

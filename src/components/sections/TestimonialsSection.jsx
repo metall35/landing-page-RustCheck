@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, CheckCircle, ExternalLink } from "lucide-react";
+import { Star, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function TestimonialsSection() {
@@ -110,7 +110,7 @@ export default function TestimonialsSection() {
 
                 {/* Review Text */}
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  "{review.text}"
+                  &quot;{review.text}&quot;
                 </p>
               </div>
 

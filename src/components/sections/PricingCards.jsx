@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Car, ShieldAlert, Award } from "lucide-react";
+import { Check, Car, Award } from "lucide-react";
 import Image from "next/image";
 
 export default function PricingCards() {
@@ -137,7 +137,7 @@ export default function PricingCards() {
                 </div>
 
                 <div className="p-6 flex-grow">
-                  <h4 className="font-bold text-xs text-foreground uppercase tracking-wider mb-3">What's Covered:</h4>
+                  <h4 className="font-bold text-xs text-foreground uppercase tracking-wider mb-3">What&apos;s Covered:</h4>
                   <ul className="space-y-2.5">
                     {card.features.map((feature) => (
                       <li key={feature} className="flex items-start text-xs">
