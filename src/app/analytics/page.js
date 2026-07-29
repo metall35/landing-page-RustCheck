@@ -44,8 +44,8 @@ export default function AnalyticsDashboardPage() {
 
   const handlePinSubmit = (e) => {
     e.preventDefault();
-    // Default secret code: 2026 (or 1234)
-    const validPins = ["2026", "1234", "7200"];
+    const configuredPin = process.env.NEXT_PUBLIC_ANALYTICS_PIN || "2026";
+    const validPins = [configuredPin, "2026", "7200"];
     if (validPins.includes(pinInput.trim())) {
       setIsAuthenticated(true);
       setPinError(false);
