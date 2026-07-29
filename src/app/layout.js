@@ -42,7 +42,7 @@ export const metadata = {
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 export default function RootLayout({ children }) {
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-34J4G4DS01";
 
   return (
     <html

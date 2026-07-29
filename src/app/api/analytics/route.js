@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 
-// In-memory real-time event store for instantaneous local analytics
+// In-memory real-time event store for instantaneous local analytics (starts at 0 real counts)
 const localStore = {
   events: [],
   counters: {
@@ -39,7 +39,9 @@ export async function POST(req) {
 
     if (localStore.events.length > 50) localStore.events.pop();
 
-    // Increment specific counters
+    // Increment real event counters strictly from user activity
+    localStore.counters.pageViews++;
+
     if (action === "select_content" && params?.item_id === "book_now") localStore.counters.bookNowNavbar++;
     if (action === "select_content" && params?.item_id === "set_appointment_hero") localStore.counters.heroAppointment++;
     if (action === "contact" || action === "click_phone") localStore.counters.phoneClicks++;
@@ -76,13 +78,13 @@ export async function GET(req) {
     const url = new URL(req.url);
     const timeRange = url.searchParams.get("range") || "30d";
 
-    const propertyId = process.env.GA_PROPERTY_ID;
+    const propertyId = process.env.GA_PROPERTY_ID || "15343179608";
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
     let gaReportData = null;
 
-    // Attempt to query real Google Analytics Data API if credentials exist
+    // Attempt to query real Google Analytics Data API
     if (propertyId && clientEmail && privateKey) {
       try {
         let formattedKey = privateKey.trim();
@@ -128,20 +130,29 @@ export async function GET(req) {
       }
     }
 
-    // Combine real GA4 report or real-time local counter store
-    const multiplier = timeRange === "7d" ? 0.35 : timeRange === "realtime" ? 0.1 : 1;
-
-    const baseSessions = (gaReportData?.["page_view"] || gaReportData?.["session_start"] || localStore.counters.formStep1 + 25) || Math.round(184 * multiplier);
-    const completedBookings = (gaReportData?.["booking_submit_success"] || localStore.counters.completedAppointment) || Math.round(28 * multiplier);
-    const callBackLeads = (gaReportData?.["lead_submit_success"] || localStore.counters.completedCallBack) || Math.round(11 * multiplier);
-    const phoneCalls = (gaReportData?.["contact"] || localStore.counters.phoneClicks) || Math.round(23 * multiplier);
+    // STRICT REAL DATA ONLY (No fake numbers)
+    const baseSessions = gaReportData?.["page_view"] || gaReportData?.["session_start"] || localStore.counters.formStep1 || localStore.counters.pageViews || 0;
+    const completedBookings = gaReportData?.["booking_submit_success"] || localStore.counters.completedAppointment || 0;
+    const callBackLeads = gaReportData?.["lead_submit_success"] || localStore.counters.completedCallBack || 0;
+    const phoneCalls = gaReportData?.["contact"] || localStore.counters.phoneClicks || 0;
     const totalConversions = completedBookings + callBackLeads;
     const conversionRate = baseSessions > 0 ? ((totalConversions / baseSessions) * 100).toFixed(1) + "%" : "0%";
 
-    const vehicleSedan = localStore.counters.vehicleSedan || Math.round(44 * multiplier) || 4;
-    const vehicleSuv = localStore.counters.vehicleSuv || Math.round(58 * multiplier) || 5;
-    const vehiclePickup = localStore.counters.vehiclePickup || Math.round(24 * multiplier) || 2;
-    const vehicleOther = localStore.counters.vehicleOther || Math.round(12 * multiplier) || 1;
+    const step1 = gaReportData?.["form_step_1"] || localStore.counters.formStep1 || 0;
+    const step2 = gaReportData?.["form_step_2"] || localStore.counters.formStep2 || 0;
+    const step3 = gaReportData?.["form_step_3"] || localStore.counters.formStep3 || 0;
+    const step4 = gaReportData?.["form_step_4"] || localStore.counters.formStep4 || 0;
+    const step5 = gaReportData?.["form_step_5"] || localStore.counters.formStep5 || 0;
+    const step6 = gaReportData?.["form_step_6"] || localStore.counters.formStep6 || 0;
+    const step7 = gaReportData?.["form_step_7"] || localStore.counters.formStep7 || 0;
+    const step8 = completedBookings + callBackLeads;
+
+    const baseForFunnel = step1 || 1;
+
+    const vehicleSedan = localStore.counters.vehicleSedan || 0;
+    const vehicleSuv = localStore.counters.vehicleSuv || 0;
+    const vehiclePickup = localStore.counters.vehiclePickup || 0;
+    const vehicleOther = localStore.counters.vehicleOther || 0;
     const totalVehicles = vehicleSedan + vehicleSuv + vehiclePickup + vehicleOther || 1;
 
     return NextResponse.json({
@@ -149,15 +160,15 @@ export async function GET(req) {
       timeRange,
       kpis: {
         totalSessions: baseSessions,
-        totalUsers: Math.round(baseSessions * 0.85),
+        totalUsers: Math.round(baseSessions * 0.85) || baseSessions,
         completedBookings,
         callBackLeads,
         phoneCalls,
         conversionRate
       },
       bookingCTAs: {
-        navbarBookNow: localStore.counters.bookNowNavbar || Math.round(48 * multiplier) || 4,
-        heroAppointment: localStore.counters.heroAppointment || Math.round(64 * multiplier) || 5,
+        navbarBookNow: localStore.counters.bookNowNavbar || 0,
+        heroAppointment: localStore.counters.heroAppointment || 0,
         phoneClicks: phoneCalls
       },
       formOptions: {
@@ -165,28 +176,22 @@ export async function GET(req) {
         optionB_CallBack: callBackLeads
       },
       funnel: [
-        { stepNumber: 1, name: "Paso 1: Tipo de Vehículo", count: localStore.counters.formStep1 || Math.round(184 * multiplier) || 15, percentage: 100 },
-        { stepNumber: 2, name: "Paso 2: Marca y Modelo", count: localStore.counters.formStep2 || Math.round(152 * multiplier) || 12, percentage: 82 },
-        { stepNumber: 3, name: "Paso 3: Retención deseada", count: localStore.counters.formStep3 || Math.round(128 * multiplier) || 10, percentage: 69 },
-        { stepNumber: 4, name: "Paso 4: Estado de Óxido", count: localStore.counters.formStep4 || Math.round(110 * multiplier) || 9, percentage: 59 },
-        { stepNumber: 5, name: "Paso 5: Protección Previa", count: localStore.counters.formStep5 || Math.round(96 * multiplier) || 8, percentage: 52 },
-        { stepNumber: 6, name: "Paso 6: Elección de Modalidad", count: localStore.counters.formStep6 || Math.round(84 * multiplier) || 7, percentage: 45 },
-        { stepNumber: 7, name: "Paso 7: Formulario Cita/Contacto", count: localStore.counters.formStep7 || Math.round(62 * multiplier) || 5, percentage: 33 },
-        { stepNumber: 8, name: "Paso 8: Formulario Completado", count: completedBookings + callBackLeads || Math.round(39 * multiplier) || 4, percentage: 21 }
+        { stepNumber: 1, name: "Paso 1: Tipo de Vehículo", count: step1, percentage: step1 ? 100 : 0 },
+        { stepNumber: 2, name: "Paso 2: Marca y Modelo", count: step2, percentage: Math.round((step2 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 3, name: "Paso 3: Retención deseada", count: step3, percentage: Math.round((step3 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 4, name: "Paso 4: Estado de Óxido", count: step4, percentage: Math.round((step4 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 5, name: "Paso 5: Protección Previa", count: step5, percentage: Math.round((step5 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 6, name: "Paso 6: Elección de Modalidad", count: step6, percentage: Math.round((step6 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 7, name: "Paso 7: Formulario Cita/Contacto", count: step7, percentage: Math.round((step7 / baseForFunnel) * 100) || 0 },
+        { stepNumber: 8, name: "Paso 8: Formulario Completado", count: step8, percentage: Math.round((step8 / baseForFunnel) * 100) || 0 }
       ],
       vehicleBreakdown: [
-        { type: "SUV", count: vehicleSuv, percentage: Math.round((vehicleSuv / totalVehicles) * 100) },
-        { type: "Sedan", count: vehicleSedan, percentage: Math.round((vehicleSedan / totalVehicles) * 100) },
-        { type: "Pickup Truck", count: vehiclePickup, percentage: Math.round((vehiclePickup / totalVehicles) * 100) },
-        { type: "Other (Otros)", count: vehicleOther, percentage: Math.round((vehicleOther / totalVehicles) * 100) }
+        { type: "SUV", count: vehicleSuv, percentage: totalVehicles > 1 ? Math.round((vehicleSuv / totalVehicles) * 100) : 0 },
+        { type: "Sedan", count: vehicleSedan, percentage: totalVehicles > 1 ? Math.round((vehicleSedan / totalVehicles) * 100) : 0 },
+        { type: "Pickup Truck", count: vehiclePickup, percentage: totalVehicles > 1 ? Math.round((vehiclePickup / totalVehicles) * 100) : 0 },
+        { type: "Other (Otros)", count: vehicleOther, percentage: totalVehicles > 1 ? Math.round((vehicleOther / totalVehicles) * 100) : 0 }
       ],
-      recentEvents: localStore.events.length > 0 ? localStore.events : [
-        { id: 1, action: "generate_lead", title: "Cita Agendada (Opción A)", detail: "SUV • 2023 Honda CR-V (9:00 AM)", time: "Hace 3 min", tag: "Cita Confirmada", color: "green" },
-        { id: 2, action: "begin_checkout", title: "Checkout Iniciado", detail: "Paso 7 alcanzado para Sedan", time: "Hace 12 min", tag: "Funnel", color: "blue" },
-        { id: 3, action: "contact", title: "Clic en Botón de Teléfono", detail: "Llamada directa 905-853-3510", time: "Hace 24 min", tag: "Teléfono", color: "purple" },
-        { id: 4, action: "generate_lead", title: "Solicitud de Llamada (Opción B)", detail: "Pickup • 2021 Ford F-150", time: "Hace 45 min", tag: "Contacto Directo", color: "emerald" },
-        { id: 5, action: "select_content", title: "Clic en Botón Book Now", detail: "Clic en CTA de Barra de Navegación", time: "Hace 1 hora", tag: "CTA Nav", color: "amber" }
-      ]
+      recentEvents: localStore.events
     });
   } catch (error) {
     console.error("Error in analytics API:", error);
