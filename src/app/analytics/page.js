@@ -104,7 +104,7 @@ export default function AnalyticsDashboardPage() {
                     maxLength={6}
                     value={pinInput}
                     onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
-                    placeholder="Código PIN (ej. 2026)"
+                    placeholder="Código PIN"
                     className={`w-full pl-10 pr-4 py-2.5 bg-secondary text-foreground text-center tracking-widest font-mono text-lg rounded-xl border focus:outline-none focus:ring-2 ${
                       pinError ? "border-red-500 focus:ring-red-500" : "border-border focus:ring-primary"
                     }`}
