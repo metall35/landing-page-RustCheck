@@ -84,10 +84,12 @@ export async function POST(req) {
       if (step === 5) store.counters.formStep5++;
       if (step === 6) store.counters.formStep6++;
       if (step === 7) store.counters.formStep7++;
+      if (step === 8) store.counters.formStep8++;
     }
 
-    // ONLY update completed vehicle breakdown counters on form completion
+    // ONLY update completed vehicle breakdown & step 8 counters on form completion
     if (action === "booking_submit_success" || action === "lead_submit_success") {
+      store.counters.formStep8 = (store.counters.formStep8 || 0) + 1;
       if (action === "booking_submit_success") store.counters.completedAppointment++;
       if (action === "lead_submit_success") store.counters.completedCallBack++;
 
@@ -184,7 +186,12 @@ export async function GET(req) {
     const totalConversions = completedBookings + callBackLeads;
     const conversionRate = baseSessions > 0 ? ((totalConversions / baseSessions) * 100).toFixed(1) + "%" : "0%";
 
-    const raw8 = gaReportData?.["form_step_8"] || completedBookings + callBackLeads || store.counters.completedAppointment + store.counters.completedCallBack || 0;
+    const raw8 = Math.max(
+      gaReportData?.["form_step_8"] || 0,
+      (gaReportData?.["booking_submit_success"] || 0) + (gaReportData?.["lead_submit_success"] || 0),
+      store.counters.formStep8 || 0,
+      (store.counters.completedAppointment || 0) + (store.counters.completedCallBack || 0)
+    );
     const raw7 = Math.max(gaReportData?.["form_step_7"] || store.counters.formStep7 || 0, raw8);
     const raw6 = Math.max(gaReportData?.["form_step_6"] || store.counters.formStep6 || 0, raw7);
     const raw5 = Math.max(gaReportData?.["form_step_5"] || store.counters.formStep5 || 0, raw6);
