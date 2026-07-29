@@ -9,10 +9,18 @@ export const pageview = (url) => {
   }
 };
 
-// Generic GA event dispatching
+// Generic GA event dispatching & Realtime Local Telemetry Sync
 export const trackEvent = (action, params = {}) => {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", action, params);
+  if (typeof window !== "undefined") {
+    if (window.gtag) {
+      window.gtag("event", action, params);
+    }
+    // Also post to local real-time telemetry store for instantaneous dashboard rendering
+    fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, params })
+    }).catch(() => {});
   }
 };
 

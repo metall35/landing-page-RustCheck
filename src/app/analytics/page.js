@@ -247,7 +247,7 @@ export default function AnalyticsDashboardPage() {
           <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Total Visitors
+                Visitantes Totales
               </CardTitle>
               <div className="p-2 bg-primary/10 text-primary rounded-xl">
                 <Users className="w-5 h-5" />
@@ -258,16 +258,16 @@ export default function AnalyticsDashboardPage() {
                 {loading ? "..." : kpis.totalSessions}
               </div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center font-medium">
-                <span className="text-emerald-500 font-bold mr-1">↑ 14%</span> vs previous period
+                <span className="text-emerald-500 font-bold mr-1">Tasa conversión: {kpis.conversionRate}</span>
               </p>
             </CardContent>
           </Card>
 
-          {/* Appointments Booked Card */}
-          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow">
+          {/* Option A: Appointment Booked */}
+          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow border-l-4 border-l-emerald-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Appointments Booked
+                Opción A: Citas Agendadas
               </CardTitle>
               <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-xl">
                 <CalendarCheck className="w-5 h-5" />
@@ -275,39 +275,39 @@ export default function AnalyticsDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-black text-foreground">
-                {loading ? "..." : kpis.completedBookings}
+                {loading ? "..." : (data?.formOptions?.optionA_Appointment || kpis.completedBookings)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center font-medium">
-                <span className="text-emerald-500 font-bold mr-1">↑ 22%</span> confirmed appointments
+              <p className="text-xs text-muted-foreground mt-1 font-medium">
+                Formulario completado para agendar inspección
               </p>
             </CardContent>
           </Card>
 
-          {/* Conversion Rate Card */}
-          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow">
+          {/* Option B: Call-back Requested */}
+          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Conversion Rate
+                Opción B: Pedidos de Llamada
               </CardTitle>
               <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl">
-                <TrendingUp className="w-5 h-5" />
+                <PhoneCall className="w-5 h-5" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-black text-foreground">
-                {loading ? "..." : kpis.conversionRate}
+                {loading ? "..." : (data?.formOptions?.optionB_CallBack || kpis.callBackLeads)}
               </div>
               <p className="text-xs text-muted-foreground mt-1 font-medium">
-                Bookings + Call Leads / Total Visitors
+                Formulario completado para solicitar llamada
               </p>
             </CardContent>
           </Card>
 
-          {/* Phone Call Leads Card */}
-          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow">
+          {/* Direct Phone Clicks */}
+          <Card className="shadow-md border-border/80 bg-card hover:shadow-lg transition-shadow border-l-4 border-l-purple-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Phone & Direct Calls
+                Clics en Botón de Teléfono
               </CardTitle>
               <div className="p-2 bg-purple-500/10 text-purple-500 rounded-xl">
                 <PhoneCall className="w-5 h-5" />
@@ -318,7 +318,7 @@ export default function AnalyticsDashboardPage() {
                 {loading ? "..." : kpis.phoneCalls}
               </div>
               <p className="text-xs text-muted-foreground mt-1 font-medium">
-                Direct phone link clicks (905-853-3510)
+                Llamadas directas a 905-853-3510
               </p>
             </CardContent>
           </Card>
@@ -334,10 +334,10 @@ export default function AnalyticsDashboardPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-primary" /> Multi-Step Booking Funnel Conversion
+                    <Flame className="w-5 h-5 text-primary" /> Seguimiento Paso a Paso del Formulario
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1 font-medium">
-                    Progression rate across every step of the vehicle booking form.
+                    Conoce exactamente cuántos usuarios avanzan o abandonan en cada uno de los 8 pasos.
                   </p>
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function AnalyticsDashboardPage() {
                   <div className="flex justify-between items-center text-xs font-bold">
                     <span className="text-foreground">{step.name}</span>
                     <div className="flex items-center space-x-2">
-                      <span className="text-muted-foreground font-mono">{step.count} users</span>
+                      <span className="text-muted-foreground font-mono">{step.count} usuarios</span>
                       <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[11px]">
                         {step.percentage}%
                       </span>
@@ -373,10 +373,10 @@ export default function AnalyticsDashboardPage() {
             <div>
               <CardHeader className="border-b border-border/60 pb-4">
                 <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <Car className="w-5 h-5 text-primary" /> Vehicle Type Breakdown
+                  <Car className="w-5 h-5 text-primary" /> Tipos de Vehículo (% Elección)
                 </CardTitle>
                 <p className="text-xs text-muted-foreground mt-1 font-medium">
-                  Most selected vehicle categories during booking.
+                  Distribución real entre Sedan, SUV, Pickup y Otros.
                 </p>
               </CardHeader>
 
@@ -386,7 +386,7 @@ export default function AnalyticsDashboardPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-foreground">{item.type}</span>
                       <span className="text-xs font-semibold text-muted-foreground">
-                        {item.count} selections ({item.percentage}%)
+                        {item.count} elecciones ({item.percentage}%)
                       </span>
                     </div>
                     <div className="w-full bg-secondary h-3 rounded-full overflow-hidden border border-border/40">
@@ -405,9 +405,9 @@ export default function AnalyticsDashboardPage() {
               <div className="flex items-center space-x-3">
                 <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
                 <div>
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">GA4 Connected</h4>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">GA4 & Realtime Telemetry</h4>
                   <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-                    Measurement ID: <span className="font-mono text-foreground font-bold">G-34J4G4DS01</span>
+                    Stream: <span className="font-mono text-foreground font-bold">15343179608</span> | ID: <span className="font-mono text-foreground font-bold">G-34J4G4DS01</span>
                   </p>
                 </div>
               </div>
@@ -423,22 +423,52 @@ export default function AnalyticsDashboardPage() {
           <Card className="shadow-lg border-border bg-card">
             <CardHeader className="border-b border-border/60 pb-4">
               <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                <MousePointerClick className="w-5 h-5 text-primary" /> Top CTA Button Performance
+                <MousePointerClick className="w-5 h-5 text-primary" /> Botones de Booking e Interacciones
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-1 font-medium">
-                Click distribution across landing page call-to-action buttons.
+                Seguimiento específico de clics en botones clave.
               </p>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="space-y-3">
+                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground">Botón Hero ("Set Your Appointment Now")</h4>
+                    <p className="text-xs text-muted-foreground font-medium">Ubicación: Hero Principal</p>
+                  </div>
+                  <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20">
+                    {data?.bookingCTAs?.heroAppointment || 0} Clics
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground">Botón Navbar ("Book Now!")</h4>
+                    <p className="text-xs text-muted-foreground font-medium">Ubicación: Barra de Navegación Superior</p>
+                  </div>
+                  <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20">
+                    {data?.bookingCTAs?.navbarBookNow || 0} Clics
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground">Botón Llamada Telefónica (905-853-3510)</h4>
+                    <p className="text-xs text-muted-foreground font-medium">Ubicación: Header & Contacto</p>
+                  </div>
+                  <div className="px-3 py-1 bg-purple-500/10 text-purple-500 font-black text-sm rounded-lg border border-purple-500/20">
+                    {data?.bookingCTAs?.phoneClicks || 0} Clics
+                  </div>
+                </div>
+
                 {data?.topCTAs?.map((cta) => (
-                  <div key={cta.id} className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center hover:bg-secondary transition-colors">
+                  <div key={cta.id} className="p-3 rounded-xl bg-secondary/30 border border-border/60 flex justify-between items-center">
                     <div>
-                      <h4 className="text-sm font-bold text-foreground">{cta.name}</h4>
-                      <p className="text-xs text-muted-foreground font-medium">Location: {cta.location}</p>
+                      <h4 className="text-xs font-bold text-foreground">{cta.name}</h4>
+                      <p className="text-[11px] text-muted-foreground">Ubicación: {cta.location}</p>
                     </div>
-                    <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20">
-                      {cta.clicks} Clicks
+                    <div className="px-2.5 py-0.5 bg-secondary text-foreground font-bold text-xs rounded-md">
+                      {cta.clicks} Clics
                     </div>
                   </div>
                 ))}
