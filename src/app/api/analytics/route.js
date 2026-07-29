@@ -184,16 +184,16 @@ export async function GET(req) {
     const totalConversions = completedBookings + callBackLeads;
     const conversionRate = baseSessions > 0 ? ((totalConversions / baseSessions) * 100).toFixed(1) + "%" : "0%";
 
-    const step1 = gaReportData?.["form_step_1"] || store.counters.formStep1 || 0;
-    const step2 = gaReportData?.["form_step_2"] || store.counters.formStep2 || 0;
-    const step3 = gaReportData?.["form_step_3"] || store.counters.formStep3 || 0;
-    const step4 = gaReportData?.["form_step_4"] || store.counters.formStep4 || 0;
-    const step5 = gaReportData?.["form_step_5"] || store.counters.formStep5 || 0;
-    const step6 = gaReportData?.["form_step_6"] || store.counters.formStep6 || 0;
-    const step7 = gaReportData?.["form_step_7"] || store.counters.formStep7 || 0;
-    const step8 = gaReportData?.["form_step_8"] || completedBookings + callBackLeads;
+    const raw8 = gaReportData?.["form_step_8"] || completedBookings + callBackLeads || store.counters.completedAppointment + store.counters.completedCallBack || 0;
+    const raw7 = Math.max(gaReportData?.["form_step_7"] || store.counters.formStep7 || 0, raw8);
+    const raw6 = Math.max(gaReportData?.["form_step_6"] || store.counters.formStep6 || 0, raw7);
+    const raw5 = Math.max(gaReportData?.["form_step_5"] || store.counters.formStep5 || 0, raw6);
+    const raw4 = Math.max(gaReportData?.["form_step_4"] || store.counters.formStep4 || 0, raw5);
+    const raw3 = Math.max(gaReportData?.["form_step_3"] || store.counters.formStep3 || 0, raw4);
+    const raw2 = Math.max(gaReportData?.["form_step_2"] || store.counters.formStep2 || 0, raw3);
+    const raw1 = Math.max(gaReportData?.["form_step_1"] || store.counters.formStep1 || 0, raw2);
 
-    const baseForFunnel = step1 || step8 || 1;
+    const baseForFunnel = raw1 || 1;
 
     const navbarBookNow = gaReportData?.["click_book_now_navbar"] || store.counters.bookNowNavbar || 0;
     const heroAppointment = gaReportData?.["click_hero_appointment"] || store.counters.heroAppointment || 0;
@@ -226,14 +226,14 @@ export async function GET(req) {
         optionB_CallBack: callBackLeads
       },
       funnel: [
-        { stepNumber: 1, name: "Step 1: Vehicle Type", count: step1, percentage: Math.round((step1 / baseForFunnel) * 100) || (step1 ? 100 : 0) },
-        { stepNumber: 2, name: "Step 2: Brand & Model", count: step2, percentage: Math.round((step2 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 3, name: "Step 3: Ownership Duration", count: step3, percentage: Math.round((step3 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 4, name: "Step 4: Rust Condition", count: step4, percentage: Math.round((step4 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 5, name: "Step 5: Previous Protection", count: step5, percentage: Math.round((step5 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 6, name: "Step 6: Scheduling Option", count: step6, percentage: Math.round((step6 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 7, name: "Step 7: Contact / Schedule Form", count: step7, percentage: Math.round((step7 / baseForFunnel) * 100) || 0 },
-        { stepNumber: 8, name: "Step 8: Form Completed", count: step8, percentage: Math.round((step8 / baseForFunnel) * 100) || 0 }
+        { stepNumber: 1, name: "Step 1: Vehicle Type", count: raw1, percentage: raw1 ? 100 : 0, droppedOff: raw1 - raw2 },
+        { stepNumber: 2, name: "Step 2: Brand & Model", count: raw2, percentage: Math.round((raw2 / baseForFunnel) * 100), droppedOff: raw2 - raw3 },
+        { stepNumber: 3, name: "Step 3: Ownership Duration", count: raw3, percentage: Math.round((raw3 / baseForFunnel) * 100), droppedOff: raw3 - raw4 },
+        { stepNumber: 4, name: "Step 4: Rust Condition", count: raw4, percentage: Math.round((raw4 / baseForFunnel) * 100), droppedOff: raw4 - raw5 },
+        { stepNumber: 5, name: "Step 5: Previous Protection", count: raw5, percentage: Math.round((raw5 / baseForFunnel) * 100), droppedOff: raw5 - raw6 },
+        { stepNumber: 6, name: "Step 6: Scheduling Option", count: raw6, percentage: Math.round((raw6 / baseForFunnel) * 100), droppedOff: raw6 - raw7 },
+        { stepNumber: 7, name: "Step 7: Contact / Schedule Form", count: raw7, percentage: Math.round((raw7 / baseForFunnel) * 100), droppedOff: raw7 - raw8 },
+        { stepNumber: 8, name: "Step 8: Form Completed", count: raw8, percentage: Math.round((raw8 / baseForFunnel) * 100), droppedOff: 0 }
       ],
       vehicleBreakdown: [
         { type: "SUV", count: vehicleSuv, percentage: totalVehicles > 0 ? Math.round((vehicleSuv / totalVehicles) * 100) : 0 },

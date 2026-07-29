@@ -154,6 +154,7 @@ export default function MultiStepForm() {
 
   const handleVehicleTypeSelect = (typeId) => {
     updateForm("vehicleType", typeId);
+    trackFormEvent("form_step_view", { step_number: 1, step_name: "Vehicle Type" });
     trackBeginCheckout(typeId);
     if (typeId === "other") {
       updateForm("make", "Other");

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { 
   Users, 
   CalendarCheck, 
-  TrendingUp, 
   PhoneCall, 
   Car, 
   MousePointerClick, 
@@ -14,14 +13,12 @@ import {
   RefreshCw, 
   ShieldCheck, 
   ExternalLink,
-  CheckCircle2,
-  Clock,
-  Filter,
   BarChart3,
   Flame,
   Lock,
   KeyRound,
-  ShieldAlert
+  ShieldAlert,
+  UserX
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +27,7 @@ export default function AnalyticsDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
-  const [timeRange, setTimeRange] = useState("30d");
+  const [timeRange, setTimeRange] = useState("realtime");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
@@ -171,16 +168,16 @@ export default function AnalyticsDashboardPage() {
             <div className="flex items-center space-x-2">
               <div className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                Analytics & Conversions
+                Live Analytics & Conversions
               </span>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            {/* Time Range Filter Toggle */}
+            {/* Realtime Mode Toggle */}
             <div className="bg-muted p-1 rounded-xl flex space-x-1 border border-border">
               {[
-                { id: "realtime", label: "Realtime" },
+                { id: "realtime", label: "🔴 Realtime (Live Streams)" },
                 { id: "7d", label: "7 Days" },
                 { id: "30d", label: "30 Days" }
               ].map(item => (
@@ -189,7 +186,7 @@ export default function AnalyticsDashboardPage() {
                   onClick={() => setTimeRange(item.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     timeRange === item.id 
-                      ? "bg-background text-foreground shadow-sm font-bold" 
+                      ? "bg-primary text-primary-foreground shadow-sm font-bold" 
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -360,10 +357,10 @@ export default function AnalyticsDashboardPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-primary" /> Form Step-by-Step Funnel
+                    <Flame className="w-5 h-5 text-primary" /> Form Step-by-Step Drop-off Funnel
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1 font-medium">
-                    Track exactly how many users progress or drop off across all 8 steps.
+                    Cumulative drop-off tracking across steps to see exactly where users leave the form.
                   </p>
                 </div>
               </div>
@@ -373,7 +370,14 @@ export default function AnalyticsDashboardPage() {
               {data?.funnel?.map((step, idx) => (
                 <div key={step.name} className="space-y-1.5">
                   <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-foreground">{step.name}</span>
+                    <span className="text-foreground flex items-center gap-2">
+                      {step.name}
+                      {step.droppedOff > 0 && (
+                        <span className="inline-flex items-center text-[10px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-semibold">
+                          <UserX className="w-3 h-3 mr-1 shrink-0" /> {step.droppedOff} dropped off here
+                        </span>
+                      )}
+                    </span>
                     <div className="flex items-center space-x-2">
                       <span className="text-muted-foreground font-mono">{step.count} users</span>
                       <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[11px]">
@@ -399,10 +403,10 @@ export default function AnalyticsDashboardPage() {
             <div>
               <CardHeader className="border-b border-border/60 pb-4">
                 <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <Car className="w-5 h-5 text-primary" /> Vehicle Types (% Selected)
+                  <Car className="w-5 h-5 text-primary" /> Completed Form Vehicle Types
                 </CardTitle>
                 <p className="text-xs text-muted-foreground mt-1 font-medium">
-                  Real breakdown between Sedan, SUV, Pickup, and Other.
+                  Recorded vehicle breakdown only from submitted forms.
                 </p>
               </CardHeader>
 
@@ -412,7 +416,7 @@ export default function AnalyticsDashboardPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-foreground">{item.type}</span>
                       <span className="text-xs font-semibold text-muted-foreground">
-                        {item.count} selections ({item.percentage}%)
+                        {item.count} submissions ({item.percentage}%)
                       </span>
                     </div>
                     <div className="w-full bg-secondary h-3 rounded-full overflow-hidden border border-border/40">
@@ -442,102 +446,50 @@ export default function AnalyticsDashboardPage() {
 
         </div>
 
-        {/* CTAs & Live Activity Stream */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Top Call to Action Clicks */}
-          <Card className="shadow-lg border-border bg-card">
-            <CardHeader className="border-b border-border/60 pb-4">
-              <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                <MousePointerClick className="w-5 h-5 text-primary" /> Booking Buttons & Interactions
-              </CardTitle>
-              <p className="text-xs text-muted-foreground mt-1 font-medium">
-                Specific tracking of clicks on key buttons.
-              </p>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground">Hero CTA Button (&quot;Set Your Appointment Now&quot;)</h4>
-                    <p className="text-xs text-muted-foreground font-medium">Location: Main Hero</p>
-                  </div>
-                  <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20">
-                    {data?.bookingCTAs?.heroAppointment || 0} Clicks
-                  </div>
+        {/* Top Call to Action Clicks (Full Width) */}
+        <Card className="shadow-lg border-border bg-card">
+          <CardHeader className="border-b border-border/60 pb-4">
+            <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+              <MousePointerClick className="w-5 h-5 text-primary" /> Booking Buttons & Interactions
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
+              Specific tracking of clicks on key call-to-action buttons.
+            </p>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Hero CTA Button (&quot;Set Your Appointment Now&quot;)</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Location: Main Hero</p>
                 </div>
-
-                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground">Navbar CTA Button (&quot;Book Now!&quot;)</h4>
-                    <p className="text-xs text-muted-foreground font-medium">Location: Top Navigation Bar</p>
-                  </div>
-                  <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20">
-                    {data?.bookingCTAs?.navbarBookNow || 0} Clicks
-                  </div>
+                <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20 shrink-0 ml-3">
+                  {data?.bookingCTAs?.heroAppointment || 0} Clicks
                 </div>
-
-                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex justify-between items-center">
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground">Phone Call Button (905-853-3510)</h4>
-                    <p className="text-xs text-muted-foreground font-medium">Location: Header & Contact</p>
-                  </div>
-                  <div className="px-3 py-1 bg-purple-500/10 text-purple-500 font-black text-sm rounded-lg border border-purple-500/20">
-                    {data?.bookingCTAs?.phoneClicks || 0} Clicks
-                  </div>
-                </div>
-
-                {data?.topCTAs?.map((cta) => (
-                  <div key={cta.id} className="p-3 rounded-xl bg-secondary/30 border border-border/60 flex justify-between items-center">
-                    <div>
-                      <h4 className="text-xs font-bold text-foreground">{cta.name}</h4>
-                      <p className="text-[11px] text-muted-foreground">Location: {cta.location}</p>
-                    </div>
-                    <div className="px-2.5 py-0.5 bg-secondary text-foreground font-bold text-xs rounded-md">
-                      {cta.clicks} Clicks
-                    </div>
-                  </div>
-                ))}
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Recent Interaction Activity Log */}
-          <Card className="shadow-lg border-border bg-card">
-            <CardHeader className="border-b border-border/60 pb-4">
-              <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" /> Recent Event Activity Stream
-              </CardTitle>
-              <p className="text-xs text-muted-foreground mt-1 font-medium">
-                Live stream of key conversions and user events.
-              </p>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                {data?.recentEvents?.map((event) => (
-                  <div key={event.id} className="p-3 rounded-xl border border-border bg-card flex justify-between items-center hover:border-primary/30 transition-all">
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h5 className="text-xs font-bold text-foreground">{event.title || event.action}</h5>
-                          <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-secondary text-foreground">
-                            {event.tag || event.action}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{event.detail || JSON.stringify(event.params || {})}</p>
-                      </div>
-                    </div>
-                    <span className="text-[11px] text-muted-foreground font-medium shrink-0 ml-2">
-                      {event.timestamp || event.time}
-                    </span>
-                  </div>
-                ))}
+              <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Navbar CTA Button (&quot;Book Now!&quot;)</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Location: Top Navigation Bar</p>
+                </div>
+                <div className="px-3 py-1 bg-primary/10 text-primary font-black text-sm rounded-lg border border-primary/20 shrink-0 ml-3">
+                  {data?.bookingCTAs?.navbarBookNow || 0} Clicks
+                </div>
               </div>
-            </CardContent>
-          </Card>
 
-        </div>
+              <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Phone Call Button (905-853-3510)</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Location: Header & Contact</p>
+                </div>
+                <div className="px-3 py-1 bg-purple-500/10 text-purple-500 font-black text-sm rounded-lg border border-purple-500/20 shrink-0 ml-3">
+                  {data?.bookingCTAs?.phoneClicks || 0} Clicks
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
       </main>
 
