@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import fs from "fs";
 import path from "path";
+import { appendToGoogleSheet } from "@/lib/sheets";
 
 // Helper function to get authorized Google Calendar client
 async function getGoogleCalendarClient() {
@@ -64,6 +65,26 @@ async function getGoogleCalendarClient() {
   return { calendar, auth, calendarId };
 }
 
+// Helper function to extract date string (YYYY-MM-DD) and time string (HH:mm) in a target timezone
+function getDateTimePartsInZone(dateObj, timeZone) {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  });
+  const parts = formatter.formatToParts(dateObj);
+  const map = {};
+  parts.forEach(p => { if (p.type !== 'literal') map[p.type] = p.value; });
+  return {
+    dateStr: `${map.year}-${map.month}-${map.day}`,
+    timeStr: `${map.hour}:${map.minute}`
+  };
+}
+
 // GET: Fetch booked slots and user bookings for a specific date
 export async function GET(req) {
   try {
@@ -83,9 +104,10 @@ export async function GET(req) {
     const { calendar, auth, calendarId } = clientObj;
     const timeZone = process.env.TIMEZONE || "America/Toronto";
 
-    // Query events for the full 24-hour range of the selected date
-    const timeMin = new Date(`${date}T00:00:00`).toISOString();
-    const timeMax = new Date(`${date}T23:59:59`).toISOString();
+    // Query broad range around target date to ensure all timezone offsets are covered
+    const targetDate = new Date(`${date}T12:00:00Z`);
+    const timeMin = new Date(targetDate.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const timeMax = new Date(targetDate.getTime() + 36 * 60 * 60 * 1000).toISOString();
 
     const response = await calendar.events.list({
       auth,
@@ -103,27 +125,26 @@ export async function GET(req) {
     events.forEach(event => {
       if (event.status === "cancelled") return;
 
-      // Check booked hours
-      if (event.start && event.start.dateTime) {
-        const eventDate = new Date(event.start.dateTime);
-        const hours = String(eventDate.getHours()).padStart(2, "0");
-        const minutes = String(eventDate.getMinutes()).padStart(2, "0");
-        const slotTime = `${hours}:${minutes}`;
-        if (!bookedSlots.includes(slotTime)) {
-          bookedSlots.push(slotTime);
+      const eventStartStr = event.start?.dateTime || event.start?.date;
+      if (!eventStartStr) return;
+
+      const { dateStr, timeStr } = getDateTimePartsInZone(new Date(eventStartStr), timeZone);
+
+      if (dateStr === date) {
+        if (event.start?.dateTime && !bookedSlots.includes(timeStr)) {
+          bookedSlots.push(timeStr);
         }
-      }
 
-      // Check if this email already booked on this date
-      if (checkEmail) {
-        const isAttendee = event.attendees?.some(
-          att => att.email && att.email.toLowerCase() === checkEmail
-        );
-        const isMentionedInDescription = event.description?.toLowerCase().includes(checkEmail);
-        const isMentionedInSummary = event.summary?.toLowerCase().includes(checkEmail);
+        if (checkEmail) {
+          const isAttendee = event.attendees?.some(
+            att => att.email && att.email.toLowerCase() === checkEmail
+          );
+          const isMentionedInDescription = event.description?.toLowerCase().includes(checkEmail);
+          const isMentionedInSummary = event.summary?.toLowerCase().includes(checkEmail);
 
-        if (isAttendee || isMentionedInDescription || isMentionedInSummary) {
-          emailAlreadyBooked = true;
+          if (isAttendee || isMentionedInDescription || isMentionedInSummary) {
+            emailAlreadyBooked = true;
+          }
         }
       }
     });
@@ -172,8 +193,9 @@ export async function POST(req) {
     // -------------------------------------------------------------
     // 1. AVAILABILITY & DUPLICATE CHECK BEFORE BOOKING
     // -------------------------------------------------------------
-    const timeMin = new Date(`${date}T00:00:00`).toISOString();
-    const timeMax = new Date(`${date}T23:59:59`).toISOString();
+    const targetDate = new Date(`${date}T12:00:00Z`);
+    const timeMin = new Date(targetDate.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const timeMax = new Date(targetDate.getTime() + 36 * 60 * 60 * 1000).toISOString();
 
     const existingEventsResponse = await calendar.events.list({
       auth,
@@ -188,34 +210,34 @@ export async function POST(req) {
     for (const event of existingEvents) {
       if (event.status === "cancelled") continue;
 
-      // Check A: Duplicate Booking for same Email on same Date
-      const isAttendee = event.attendees?.some(
-        att => att.email && att.email.toLowerCase() === userEmailLower
-      );
-      const isMentionedInDesc = event.description?.toLowerCase().includes(userEmailLower);
+      const eventStartStr = event.start?.dateTime || event.start?.date;
+      if (!eventStartStr) continue;
 
-      if (isAttendee || isMentionedInDesc) {
-        return NextResponse.json(
-          {
-            error: "Ya tienes una cita agendada para este día.",
-            details: `El correo ${email} ya cuenta con una inspección reservada para la fecha ${date}. Si necesitas modificar tu cita, por favor ponte en contacto con nosotros.`
-          },
-          { status: 400 }
+      const { dateStr, timeStr } = getDateTimePartsInZone(new Date(eventStartStr), timeZone);
+
+      if (dateStr === date) {
+        // Check A: Duplicate Booking for same Email on same Date
+        const isAttendee = event.attendees?.some(
+          att => att.email && att.email.toLowerCase() === userEmailLower
         );
-      }
+        const isMentionedInDesc = event.description?.toLowerCase().includes(userEmailLower);
 
-      // Check B: Time Slot Conflict (Double-Booking Prevention)
-      if (event.start && event.start.dateTime) {
-        const eventStart = new Date(event.start.dateTime);
-        const eventHours = String(eventStart.getHours()).padStart(2, "0");
-        const eventMinutes = String(eventStart.getMinutes()).padStart(2, "0");
-        const existingSlot = `${eventHours}:${eventMinutes}`;
-
-        if (existingSlot === time) {
+        if (isAttendee || isMentionedInDesc) {
           return NextResponse.json(
             {
-              error: "Horario no disponible.",
-              details: `El horario de las ${time} para la fecha ${date} ya ha sido reservado por otro usuario. Por favor selecciona otro horario disponible.`
+              error: "You already have an appointment scheduled for this date.",
+              details: `The email address ${email} already has an inspection reserved for ${date}. If you need to modify your appointment, please contact us.`
+            },
+            { status: 400 }
+          );
+        }
+
+        // Check B: Time Slot Conflict (Double-Booking Prevention)
+        if (event.start?.dateTime && timeStr === time) {
+          return NextResponse.json(
+            {
+              error: "Time slot unavailable.",
+              details: `The ${time} time slot for ${date} has already been reserved. Please select another available time slot.`
             },
             { status: 400 }
           );
@@ -280,11 +302,22 @@ Scheduled via Rust Check Online Form.
       sendUpdates: "all",
     });
 
+    // Record booking in Google Sheets
+    await appendToGoogleSheet({
+      name,
+      email,
+      phone,
+      date,
+      time,
+      formData,
+      type: "Appointment Booking"
+    });
+
     return NextResponse.json({
       success: true,
       eventId: response.data.id,
       htmlLink: response.data.htmlLink,
-      message: "Appointment successfully scheduled on Google Calendar!"
+      message: "Appointment successfully scheduled on Google Calendar and recorded in Google Sheets!"
     });
   } catch (error) {
     const errorDetails = error.response?.data?.error?.message || error.message || error.toString();

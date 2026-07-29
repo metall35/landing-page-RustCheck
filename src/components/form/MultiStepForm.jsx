@@ -49,10 +49,17 @@ export default function MultiStepForm() {
   const isSunday = new Date(`${bookingData.date}T00:00:00`).getDay() === 0;
 
   useEffect(() => {
-    if (availableTimeSlots.length > 0 && !availableTimeSlots.includes(bookingData.time)) {
-      setBookingData(prev => ({ ...prev, time: availableTimeSlots[0] }));
+    if (availableTimeSlots.length > 0) {
+      const freeSlots = availableTimeSlots.filter(t => !bookedSlots.includes(t));
+      if (!freeSlots.includes(bookingData.time)) {
+        if (freeSlots.length > 0) {
+          setBookingData(prev => ({ ...prev, time: freeSlots[0] }));
+        } else if (!availableTimeSlots.includes(bookingData.time)) {
+          setBookingData(prev => ({ ...prev, time: availableTimeSlots[0] }));
+        }
+      }
     }
-  }, [bookingData.date]);
+  }, [bookingData.date, bookedSlots, availableTimeSlots]);
 
   useEffect(() => {
     if (step !== 7 || isJustLooking || !bookingData.date) return;
