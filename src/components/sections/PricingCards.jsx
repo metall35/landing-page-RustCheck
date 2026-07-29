@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, Car, Award } from "lucide-react";
 import Image from "next/image";
+import { trackCTA } from "@/lib/gtag";
 
 export default function PricingCards() {
   const cards = [
@@ -63,6 +64,8 @@ export default function PricingCards() {
   ];
 
   const handleSelectVehicle = (type) => {
+    trackCTA(`select_pricing_card_${type.toLowerCase()}`, "pricing_cards");
+    
     // Map 'Truck' card to 'pickup' option in the form
     const formType = type.toLowerCase() === "truck" ? "pickup" : type.toLowerCase();
     

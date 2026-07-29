@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Menu, X, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { trackCTA, trackPhoneClick, trackLocationClick } from "@/lib/gtag";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,6 +25,11 @@ export default function Navbar() {
     { name: "Trust", href: "#trust" },
     { name: "Reviews", href: "#reviews" },
   ];
+
+  const handleBookNow = (location = "desktop_navbar") => {
+    trackCTA("book_now", location);
+    document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-background/90 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"}`}>
@@ -56,6 +62,7 @@ export default function Navbar() {
 
           <a 
             href="tel:9058533510" 
+            onClick={() => trackPhoneClick("9058533510", "desktop_navbar")}
             className="flex items-center gap-2 text-md font-bold text-foreground/90 hover:text-primary transition-all duration-300 hover:scale-102"
           >
             <Phone className="w-4 h-4 text-primary animate-pulse" />
@@ -67,6 +74,7 @@ export default function Navbar() {
               href="#contact-location" 
               onClick={(e) => {
                 e.preventDefault();
+                trackLocationClick("navbar_icon");
                 document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" });
               }}
               className="p-2 text-foreground/80 hover:text-primary transition-colors hover:scale-110"
@@ -76,7 +84,7 @@ export default function Navbar() {
             </a>
             <ThemeToggle />
             <Button 
-              onClick={() => document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" })} 
+              onClick={() => handleBookNow("desktop_navbar")} 
               className="font-bold rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-300"
             >
               Book Now!
@@ -88,6 +96,7 @@ export default function Navbar() {
         <div className="flex items-center md:hidden space-x-1">
           <a 
             href="tel:9058533510" 
+            onClick={() => trackPhoneClick("9058533510", "mobile_navbar")}
             className="p-2 text-foreground/80 hover:text-primary transition-colors"
             title="Call Us"
           >
@@ -97,6 +106,7 @@ export default function Navbar() {
             href="#contact-location" 
             onClick={(e) => {
               e.preventDefault();
+              trackLocationClick("mobile_navbar_icon");
               document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" });
             }}
             className="p-2 text-foreground/80 hover:text-primary transition-colors"
@@ -128,7 +138,13 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
-            <Button className="w-full font-bold bg-primary hover:bg-primary/95 text-white" onClick={() => { document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }}>
+            <Button 
+              className="w-full font-bold bg-primary hover:bg-primary/95 text-white" 
+              onClick={() => { 
+                handleBookNow("mobile_menu"); 
+                setMobileMenuOpen(false); 
+              }}
+            >
               Book Now!
             </Button>
           </div>

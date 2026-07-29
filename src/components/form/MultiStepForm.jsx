@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, ChevronLeft } from "lucide-react";
 import ExitIntentModal from "@/components/form/ExitIntentModal";
-import { trackFormEvent } from "@/lib/gtag";
+import { trackFormEvent, trackBeginCheckout, trackLead } from "@/lib/gtag";
 import toast from "react-hot-toast";
 
 import { STEP_NAMES, getMinBookingDate, getTimeSlotsForDate } from "./formUtils";
@@ -97,6 +97,9 @@ export default function MultiStepForm() {
       step_number: step,
       step_name: STEP_NAMES[step - 1] || `Step ${step}`
     });
+    if (step === 1) {
+      trackBeginCheckout(formData.vehicleType || "not_selected");
+    }
   }, [step]);
 
   useEffect(() => {
@@ -104,6 +107,7 @@ export default function MultiStepForm() {
       const type = e.detail.type;
       updateForm("vehicleType", type);
       trackFormEvent("form_option_selected", { step_number: 1, key: "vehicleType", value: type });
+      trackBeginCheckout(type);
       if (type === "other") {
         updateForm("make", "Other");
         updateForm("model", "Other");
@@ -143,6 +147,7 @@ export default function MultiStepForm() {
 
   const handleVehicleTypeSelect = (typeId) => {
     updateForm("vehicleType", typeId);
+    trackBeginCheckout(typeId);
     if (typeId === "other") {
       updateForm("make", "Other");
       updateForm("model", "Other");
@@ -183,11 +188,21 @@ export default function MultiStepForm() {
       if (res.ok && data.success) {
         if (isJustLooking) {
           trackFormEvent("lead_submit_success", { name: bookingData.name });
+          trackLead("call_back_request", {
+            vehicle_type: formData.vehicleType,
+            vehicle: `${formData.make} ${formData.model}`
+          });
           toast.success("Thank you! We will contact you soon.");
         } else {
           trackFormEvent("booking_submit_success", {
             date: bookingData.date,
             time: bookingData.time,
+            vehicle: `${formData.make} ${formData.model}`
+          });
+          trackLead("appointment_booking", {
+            date: bookingData.date,
+            time: bookingData.time,
+            vehicle_type: formData.vehicleType,
             vehicle: `${formData.make} ${formData.model}`
           });
           toast.success("Appointment successfully scheduled!");
@@ -198,6 +213,10 @@ export default function MultiStepForm() {
       }
     } catch (err) {
       console.error("Form submit error:", err);
+      trackFormEvent("form_submit_error", {
+        error_message: err.message,
+        is_just_looking: isJustLooking
+      });
       toast.error(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

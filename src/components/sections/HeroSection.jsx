@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import { trackCTA, trackLocationClick } from "@/lib/gtag";
 
 export default function HeroSection() {
 
@@ -74,13 +75,19 @@ export default function HeroSection() {
 
             <div className="pt-4 flex flex-col sm:flex-row gap-4">
               <button 
-                onClick={() => document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => {
+                  trackCTA("set_appointment_hero", "hero_section");
+                  document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary/95 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 text-center"
               >
                 Set Your Appointment Now
               </button>
               <button 
-                onClick={() => document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => {
+                  trackLocationClick("hero_map_hours_button");
+                  document.getElementById("contact-location")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="px-8 py-4 bg-card text-foreground border border-border font-semibold rounded-xl hover:bg-secondary/50 transition-colors text-center"
               >
                 View Map & Hours
