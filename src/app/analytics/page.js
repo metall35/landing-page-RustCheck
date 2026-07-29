@@ -247,6 +247,25 @@ export default function AnalyticsDashboardPage() {
           </div>
         </div>
 
+        {/* GA Permission Notice Alert Banner */}
+        {data?.gaErrorNotice && (
+          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-500 flex items-start gap-3 animate-in fade-in">
+            <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-bold block text-sm">Google Analytics Permission Notice</span>
+              <p className="text-xs text-foreground/90 font-medium">
+                To sync live Google Analytics metrics directly into this dashboard, add your Service Account email to your Google Analytics Property Access Management:
+              </p>
+              <div className="p-2 bg-background/80 rounded-lg border border-amber-500/20 font-mono text-[11px] text-foreground font-bold select-all">
+                rustcheckbooking@rustcheckbooking-503300.iam.gserviceaccount.com
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                In <a href="https://analytics.google.com/" target="_blank" rel="noopener noreferrer" className="underline text-primary font-bold">Google Analytics Console</a> ➔ Admin (⚙️) ➔ Property Access Management ➔ Add Users ➔ Role: <strong>Viewer</strong>.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Top KPI Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           

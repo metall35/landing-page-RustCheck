@@ -26,19 +26,21 @@ export default function Step8Confirmation({
         />
       </div>
 
-      {/* 24-Hour Prior Notice Alert Box */}
-      <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-2 max-w-sm mx-auto shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-amber-500 text-xs">
-          <Clock className="w-4 h-4 shrink-0" />
-          <span>24-Hour Confirmation Notice</span>
+      {/* 24-Hour Prior Notice Alert Box (Hidden if "We Contact You") */}
+      {!isJustLooking && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-2 max-w-sm mx-auto shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-amber-500 text-xs">
+            <Clock className="w-4 h-4 shrink-0" />
+            <span>24-Hour Confirmation Notice</span>
+          </div>
+          <p className="text-xs text-foreground/90 leading-relaxed font-medium">
+            We will contact you <strong>24 hours prior</strong> to your scheduled inspection to confirm your appointment.
+          </p>
+          <p className="text-[11px] text-amber-500 font-semibold italic border-t border-amber-500/20 pt-1.5">
+            * Please note: Unconfirmed appointments will be automatically cancelled.
+          </p>
         </div>
-        <p className="text-xs text-foreground/90 leading-relaxed font-medium">
-          We will contact you <strong>24 hours prior</strong> to your scheduled inspection to confirm your appointment.
-        </p>
-        <p className="text-[11px] text-amber-500 font-semibold italic border-t border-amber-500/20 pt-1.5">
-          * Please note: Unconfirmed appointments will be automatically cancelled.
-        </p>
-      </div>
+      )}
 
       {/* Booking Details Box */}
       <div className="p-4 bg-secondary/50 rounded-2xl text-left text-xs space-y-1.5 max-w-sm mx-auto border border-border">
@@ -55,7 +57,7 @@ export default function Step8Confirmation({
         variant="outline"
         className="mt-2 font-bold"
       >
-        Book Another Inspection
+        {isJustLooking ? "Book an inspection" : "Book Another Inspection"}
       </Button>
     </div>
   );
