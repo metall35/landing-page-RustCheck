@@ -194,7 +194,10 @@ export default function MultiStepForm() {
       const data = await res.json();
       if (res.ok && data.success) {
         if (isJustLooking) {
-          trackFormEvent("lead_submit_success", { name: bookingData.name });
+          trackFormEvent("lead_submit_success", { 
+            name: bookingData.name,
+            vehicle_type: formData.vehicleType || "other"
+          });
           trackLead("call_back_request", {
             vehicle_type: formData.vehicleType,
             vehicle: `${formData.make} ${formData.model}`
@@ -204,6 +207,7 @@ export default function MultiStepForm() {
           trackFormEvent("booking_submit_success", {
             date: bookingData.date,
             time: bookingData.time,
+            vehicle_type: formData.vehicleType || "other",
             vehicle: `${formData.make} ${formData.model}`
           });
           trackLead("appointment_booking", {

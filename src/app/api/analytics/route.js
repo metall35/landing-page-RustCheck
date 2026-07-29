@@ -65,19 +65,18 @@ export async function POST(req) {
       store.counters.pageViews++;
     }
 
-    if (action === "select_content" && params?.item_id === "book_now") store.counters.bookNowNavbar++;
-    if (action === "select_content" && params?.item_id === "set_appointment_hero") store.counters.heroAppointment++;
-    if (action === "contact" || action === "click_phone") store.counters.phoneClicks++;
-    
-    if (params?.key === "vehicleType") {
-      if (params.value === "sedan") store.counters.vehicleSedan++;
-      if (params.value === "suv") store.counters.vehicleSuv++;
-      if (params.value === "pickup") store.counters.vehiclePickup++;
-      if (params.value === "other") store.counters.vehicleOther++;
+    if (action === "click_book_now_navbar" || (action === "select_content" && params?.item_id === "book_now")) {
+      store.counters.bookNowNavbar++;
+    }
+    if (action === "click_hero_appointment" || (action === "select_content" && params?.item_id === "set_appointment_hero")) {
+      store.counters.heroAppointment++;
+    }
+    if (action === "click_phone" || action === "contact") {
+      store.counters.phoneClicks++;
     }
 
-    if (action === "form_step_view") {
-      const step = params?.step_number;
+    if (action === "form_step_view" || action?.startsWith("form_step_")) {
+      const step = params?.step_number || parseInt(action.replace("form_step_", ""), 10);
       if (step === 1) store.counters.formStep1++;
       if (step === 2) store.counters.formStep2++;
       if (step === 3) store.counters.formStep3++;
@@ -87,8 +86,17 @@ export async function POST(req) {
       if (step === 7) store.counters.formStep7++;
     }
 
-    if (action === "booking_submit_success") store.counters.completedAppointment++;
-    if (action === "lead_submit_success") store.counters.completedCallBack++;
+    // ONLY update completed vehicle breakdown counters on form completion
+    if (action === "booking_submit_success" || action === "lead_submit_success") {
+      if (action === "booking_submit_success") store.counters.completedAppointment++;
+      if (action === "lead_submit_success") store.counters.completedCallBack++;
+
+      const vType = String(params?.vehicle_type || "").toLowerCase();
+      if (vType === "sedan") store.counters.vehicleSedan++;
+      else if (vType === "suv") store.counters.vehicleSuv++;
+      else if (vType === "pickup") store.counters.vehiclePickup++;
+      else if (vType === "other") store.counters.vehicleOther++;
+    }
 
     saveStore(store);
 
@@ -172,7 +180,7 @@ export async function GET(req) {
     const baseSessions = gaReportData?.["page_view"] || gaReportData?.["session_start"] || store.counters.formStep1 || store.counters.pageViews || 0;
     const completedBookings = gaReportData?.["booking_submit_success"] || store.counters.completedAppointment || 0;
     const callBackLeads = gaReportData?.["lead_submit_success"] || store.counters.completedCallBack || 0;
-    const phoneCalls = gaReportData?.["contact"] || store.counters.phoneClicks || 0;
+    const phoneCalls = gaReportData?.["click_phone"] || gaReportData?.["contact"] || store.counters.phoneClicks || 0;
     const totalConversions = completedBookings + callBackLeads;
     const conversionRate = baseSessions > 0 ? ((totalConversions / baseSessions) * 100).toFixed(1) + "%" : "0%";
 
@@ -183,15 +191,18 @@ export async function GET(req) {
     const step5 = gaReportData?.["form_step_5"] || store.counters.formStep5 || 0;
     const step6 = gaReportData?.["form_step_6"] || store.counters.formStep6 || 0;
     const step7 = gaReportData?.["form_step_7"] || store.counters.formStep7 || 0;
-    const step8 = completedBookings + callBackLeads;
+    const step8 = gaReportData?.["form_step_8"] || completedBookings + callBackLeads;
 
-    const baseForFunnel = step1 || 1;
+    const baseForFunnel = step1 || step8 || 1;
 
-    const vehicleSedan = store.counters.vehicleSedan || 0;
-    const vehicleSuv = store.counters.vehicleSuv || 0;
-    const vehiclePickup = store.counters.vehiclePickup || 0;
-    const vehicleOther = store.counters.vehicleOther || 0;
-    const totalVehicles = vehicleSedan + vehicleSuv + vehiclePickup + vehicleOther || 1;
+    const navbarBookNow = gaReportData?.["click_book_now_navbar"] || store.counters.bookNowNavbar || 0;
+    const heroAppointment = gaReportData?.["click_hero_appointment"] || store.counters.heroAppointment || 0;
+
+    const vehicleSedan = gaReportData?.["vehicle_completed_sedan"] || store.counters.vehicleSedan || 0;
+    const vehicleSuv = gaReportData?.["vehicle_completed_suv"] || store.counters.vehicleSuv || 0;
+    const vehiclePickup = gaReportData?.["vehicle_completed_pickup"] || store.counters.vehiclePickup || 0;
+    const vehicleOther = gaReportData?.["vehicle_completed_other"] || store.counters.vehicleOther || 0;
+    const totalVehicles = vehicleSedan + vehicleSuv + vehiclePickup + vehicleOther || 0;
 
     return NextResponse.json({
       isLiveGA: Boolean(gaReportData),
@@ -206,8 +217,8 @@ export async function GET(req) {
         conversionRate
       },
       bookingCTAs: {
-        navbarBookNow: store.counters.bookNowNavbar || 0,
-        heroAppointment: store.counters.heroAppointment || 0,
+        navbarBookNow,
+        heroAppointment,
         phoneClicks: phoneCalls
       },
       formOptions: {
@@ -215,7 +226,7 @@ export async function GET(req) {
         optionB_CallBack: callBackLeads
       },
       funnel: [
-        { stepNumber: 1, name: "Step 1: Vehicle Type", count: step1, percentage: step1 ? 100 : 0 },
+        { stepNumber: 1, name: "Step 1: Vehicle Type", count: step1, percentage: Math.round((step1 / baseForFunnel) * 100) || (step1 ? 100 : 0) },
         { stepNumber: 2, name: "Step 2: Brand & Model", count: step2, percentage: Math.round((step2 / baseForFunnel) * 100) || 0 },
         { stepNumber: 3, name: "Step 3: Ownership Duration", count: step3, percentage: Math.round((step3 / baseForFunnel) * 100) || 0 },
         { stepNumber: 4, name: "Step 4: Rust Condition", count: step4, percentage: Math.round((step4 / baseForFunnel) * 100) || 0 },
@@ -225,10 +236,10 @@ export async function GET(req) {
         { stepNumber: 8, name: "Step 8: Form Completed", count: step8, percentage: Math.round((step8 / baseForFunnel) * 100) || 0 }
       ],
       vehicleBreakdown: [
-        { type: "SUV", count: vehicleSuv, percentage: totalVehicles > 1 ? Math.round((vehicleSuv / totalVehicles) * 100) : 0 },
-        { type: "Sedan", count: vehicleSedan, percentage: totalVehicles > 1 ? Math.round((vehicleSedan / totalVehicles) * 100) : 0 },
-        { type: "Pickup Truck", count: vehiclePickup, percentage: totalVehicles > 1 ? Math.round((vehiclePickup / totalVehicles) * 100) : 0 },
-        { type: "Other", count: vehicleOther, percentage: totalVehicles > 1 ? Math.round((vehicleOther / totalVehicles) * 100) : 0 }
+        { type: "SUV", count: vehicleSuv, percentage: totalVehicles > 0 ? Math.round((vehicleSuv / totalVehicles) * 100) : 0 },
+        { type: "Sedan", count: vehicleSedan, percentage: totalVehicles > 0 ? Math.round((vehicleSedan / totalVehicles) * 100) : 0 },
+        { type: "Pickup Truck", count: vehiclePickup, percentage: totalVehicles > 0 ? Math.round((vehiclePickup / totalVehicles) * 100) : 0 },
+        { type: "Other", count: vehicleOther, percentage: totalVehicles > 0 ? Math.round((vehicleOther / totalVehicles) * 100) : 0 }
       ],
       recentEvents: store.events
     });

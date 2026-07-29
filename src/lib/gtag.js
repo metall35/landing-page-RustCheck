@@ -24,12 +24,30 @@ export const trackEvent = (action, params = {}) => {
   }
 };
 
-// Form Progression event tracker (backward compatible)
+// Form Progression event tracker
 export const trackFormEvent = (action, params = {}) => {
   trackEvent(action, {
     event_category: "Form Progression",
     ...params,
   });
+
+  if (action === "form_step_view" && params.step_number) {
+    trackEvent(`form_step_${params.step_number}`, {
+      event_category: "Form Progression",
+      step_name: params.step_name || `Step ${params.step_number}`
+    });
+  }
+
+  if (action === "booking_submit_success" || action === "lead_submit_success") {
+    trackEvent("form_step_8", { event_category: "Form Progression" });
+    if (params.vehicle_type) {
+      const vType = String(params.vehicle_type).toLowerCase();
+      trackEvent(`vehicle_completed_${vType}`, {
+        event_category: "Completed Vehicle Type",
+        vehicle_type: vType
+      });
+    }
+  }
 };
 
 // CTA click tracker
@@ -40,6 +58,12 @@ export const trackCTA = (ctaName, location) => {
     location: location,
     event_category: "CTA Click",
   });
+
+  if (ctaName === "book_now") {
+    trackEvent("click_book_now_navbar", { location });
+  } else if (ctaName === "set_appointment_hero") {
+    trackEvent("click_hero_appointment", { location });
+  }
 };
 
 // Phone call link tracker
@@ -50,6 +74,7 @@ export const trackPhoneClick = (phoneNumber, location = "header") => {
     location: location,
     event_category: "Conversion",
   });
+  trackEvent("click_phone", { location });
 };
 
 // Location / Map click tracker
@@ -77,4 +102,3 @@ export const trackLead = (leadType, details = {}) => {
     ...details,
   });
 };
-
