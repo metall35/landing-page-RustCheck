@@ -109,6 +109,7 @@ export async function GET(req) {
     let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
     let gaReportData = null;
+    let gaErrorNotice = null;
 
     // Attempt to query real Google Analytics Data API
     if (propertyId && clientEmail && privateKey) {
@@ -128,19 +129,30 @@ export async function GET(req) {
         await auth.authorize();
         const analyticsdata = google.analyticsdata({ version: "v1beta", auth });
 
-        const response = await analyticsdata.properties.runReport({
-          property: `properties/${propertyId}`,
-          requestBody: {
-            dateRanges: [
-              {
-                startDate: timeRange === "7d" ? "7daysAgo" : timeRange === "realtime" ? "today" : "30daysAgo",
-                endDate: "today"
-              }
-            ],
-            dimensions: [{ name: "eventName" }],
-            metrics: [{ name: "eventCount" }, { name: "activeUsers" }]
-          }
-        });
+        let response;
+        if (timeRange === "realtime") {
+          response = await analyticsdata.properties.runRealtimeReport({
+            property: `properties/${propertyId}`,
+            requestBody: {
+              dimensions: [{ name: "eventName" }],
+              metrics: [{ name: "eventCount" }]
+            }
+          });
+        } else {
+          response = await analyticsdata.properties.runReport({
+            property: `properties/${propertyId}`,
+            requestBody: {
+              dateRanges: [
+                {
+                  startDate: timeRange === "7d" ? "7daysAgo" : "30daysAgo",
+                  endDate: "today"
+                }
+              ],
+              dimensions: [{ name: "eventName" }],
+              metrics: [{ name: "eventCount" }, { name: "activeUsers" }]
+            }
+          });
+        }
 
         if (response.data && response.data.rows) {
           const eventsMap = {};
@@ -152,6 +164,7 @@ export async function GET(req) {
           gaReportData = eventsMap;
         }
       } catch (gaError) {
+        gaErrorNotice = gaError.message;
         console.warn("GA Data API query notice:", gaError.message);
       }
     }
@@ -182,6 +195,7 @@ export async function GET(req) {
 
     return NextResponse.json({
       isLiveGA: Boolean(gaReportData),
+      gaErrorNotice,
       timeRange,
       kpis: {
         totalSessions: baseSessions,
