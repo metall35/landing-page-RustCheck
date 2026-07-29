@@ -204,6 +204,14 @@ export async function GET(req) {
     const vehicleOther = gaReportData?.["vehicle_completed_other"] || store.counters.vehicleOther || 0;
     const totalVehicles = vehicleSedan + vehicleSuv + vehiclePickup + vehicleOther || 0;
 
+    const drop1 = raw1 - raw2;
+    const drop2 = raw2 - raw3;
+    const drop3 = raw3 - raw4;
+    const drop4 = raw4 - raw5;
+    const drop5 = raw5 - raw6;
+    const drop6 = raw6 - raw7;
+    const drop7 = raw7 - raw8;
+
     return NextResponse.json({
       isLiveGA: Boolean(gaReportData),
       gaErrorNotice,
@@ -226,14 +234,14 @@ export async function GET(req) {
         optionB_CallBack: callBackLeads
       },
       funnel: [
-        { stepNumber: 1, name: "Step 1: Vehicle Type", count: raw1, percentage: raw1 ? 100 : 0, droppedOff: raw1 - raw2 },
-        { stepNumber: 2, name: "Step 2: Brand & Model", count: raw2, percentage: Math.round((raw2 / baseForFunnel) * 100), droppedOff: raw2 - raw3 },
-        { stepNumber: 3, name: "Step 3: Ownership Duration", count: raw3, percentage: Math.round((raw3 / baseForFunnel) * 100), droppedOff: raw3 - raw4 },
-        { stepNumber: 4, name: "Step 4: Rust Condition", count: raw4, percentage: Math.round((raw4 / baseForFunnel) * 100), droppedOff: raw4 - raw5 },
-        { stepNumber: 5, name: "Step 5: Previous Protection", count: raw5, percentage: Math.round((raw5 / baseForFunnel) * 100), droppedOff: raw5 - raw6 },
-        { stepNumber: 6, name: "Step 6: Scheduling Option", count: raw6, percentage: Math.round((raw6 / baseForFunnel) * 100), droppedOff: raw6 - raw7 },
-        { stepNumber: 7, name: "Step 7: Contact / Schedule Form", count: raw7, percentage: Math.round((raw7 / baseForFunnel) * 100), droppedOff: raw7 - raw8 },
-        { stepNumber: 8, name: "Step 8: Form Completed", count: raw8, percentage: Math.round((raw8 / baseForFunnel) * 100), droppedOff: 0 }
+        { stepNumber: 1, name: "Step 1: Vehicle Type", count: raw1, percentage: Math.round((drop1 / baseForFunnel) * 100), droppedOff: drop1, isDropOff: true },
+        { stepNumber: 2, name: "Step 2: Brand & Model", count: raw2, percentage: Math.round((drop2 / baseForFunnel) * 100), droppedOff: drop2, isDropOff: true },
+        { stepNumber: 3, name: "Step 3: Ownership Duration", count: raw3, percentage: Math.round((drop3 / baseForFunnel) * 100), droppedOff: drop3, isDropOff: true },
+        { stepNumber: 4, name: "Step 4: Rust Condition", count: raw4, percentage: Math.round((drop4 / baseForFunnel) * 100), droppedOff: drop4, isDropOff: true },
+        { stepNumber: 5, name: "Step 5: Previous Protection", count: raw5, percentage: Math.round((drop5 / baseForFunnel) * 100), droppedOff: drop5, isDropOff: true },
+        { stepNumber: 6, name: "Step 6: Scheduling Option", count: raw6, percentage: Math.round((drop6 / baseForFunnel) * 100), droppedOff: drop6, isDropOff: true },
+        { stepNumber: 7, name: "Step 7: Contact / Schedule Form", count: raw7, percentage: Math.round((drop7 / baseForFunnel) * 100), droppedOff: drop7, isDropOff: true },
+        { stepNumber: 8, name: "Step 8: Form Completed", count: raw8, percentage: Math.round((raw8 / baseForFunnel) * 100), droppedOff: 0, isDropOff: false }
       ],
       vehicleBreakdown: [
         { type: "SUV", count: vehicleSuv, percentage: totalVehicles > 0 ? Math.round((vehicleSuv / totalVehicles) * 100) : 0 },

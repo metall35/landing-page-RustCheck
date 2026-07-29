@@ -100,11 +100,12 @@ export default function MultiStepForm() {
   }, [step, formData.vehicleType]);
 
   useEffect(() => {
-    trackFormEvent("form_step_view", {
-      step_number: step,
-      step_name: STEP_NAMES[step - 1] || `Step ${step}`
-    });
-    if (step === 1) {
+    if (step > 1) {
+      trackFormEvent("form_step_view", {
+        step_number: step,
+        step_name: STEP_NAMES[step - 1] || `Step ${step}`
+      });
+    } else {
       trackBeginCheckout(formData.vehicleType || "not_selected");
     }
   }, [step]);
@@ -113,6 +114,7 @@ export default function MultiStepForm() {
     const handleSelect = (e) => {
       const type = e.detail.type;
       updateForm("vehicleType", type);
+      trackFormEvent("form_step_view", { step_number: 1, step_name: "Vehicle Type" });
       trackFormEvent("form_option_selected", { step_number: 1, key: "vehicleType", value: type });
       trackBeginCheckout(type);
       if (type === "other") {

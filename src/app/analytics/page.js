@@ -367,30 +367,31 @@ export default function AnalyticsDashboardPage() {
             </CardHeader>
             
             <CardContent className="pt-6 space-y-4">
-              {data?.funnel?.map((step, idx) => (
+              {data?.funnel?.map((step) => (
                 <div key={step.name} className="space-y-1.5">
                   <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-foreground flex items-center gap-2">
-                      {step.name}
-                      {step.droppedOff > 0 && (
-                        <span className="inline-flex items-center text-[10px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-semibold">
-                          <UserX className="w-3 h-3 mr-1 shrink-0" /> {step.droppedOff} dropped off here
+                    <span className="text-foreground">{step.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-muted-foreground font-mono">{step.count} reached</span>
+                      {step.isDropOff ? (
+                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                          step.droppedOff > 0 ? "bg-amber-500/10 text-amber-500 border-amber-500/30" : "bg-secondary text-muted-foreground border-border"
+                        }`}>
+                          {step.percentage}% Drop-off ({step.droppedOff} left)
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                          {step.percentage}% Completed ({step.count})
                         </span>
                       )}
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-muted-foreground font-mono">{step.count} users</span>
-                      <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[11px]">
-                        {step.percentage}%
-                      </span>
                     </div>
                   </div>
                   <div className="w-full bg-secondary h-3 rounded-full overflow-hidden border border-border/40">
                     <div 
                       className={`h-full transition-all duration-700 ease-out rounded-full ${
-                        idx === 0 ? "bg-primary" : idx === data.funnel.length - 1 ? "bg-emerald-500" : "bg-primary/80"
+                        step.isDropOff ? (step.droppedOff > 0 ? "bg-amber-500" : "bg-primary/50") : "bg-emerald-500"
                       }`} 
-                      style={{ width: `${step.percentage}%` }}
+                      style={{ width: `${step.isDropOff ? (step.droppedOff > 0 ? Math.max(step.percentage, 10) : 5) : Math.max(step.percentage, 5)}%` }}
                     />
                   </div>
                 </div>
