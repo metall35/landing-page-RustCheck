@@ -28,10 +28,15 @@ export async function sendLeadNotificationEmail({ name, email, phone, formData, 
     const timestamp = new Date().toLocaleString("en-US", { timeZone: process.env.TIMEZONE || "America/Toronto" });
     const vehicleStr = formData ? `${formData.make || ""} ${formData.model || ""} (${formData.vehicleType || "N/A"})`.trim() : "N/A";
 
+    const isBooking = type.toLowerCase().includes("booking") || type.toLowerCase().includes("appointment");
+    const subjectPrefix = isBooking ? "[NEW BOOKING]" : "[NEW CALL REQUEST]";
+    const headerTitle = isBooking ? "📅 NEW APPOINTMENT BOOKED" : "📞 NEW CALL BACK REQUEST";
+    const headerColor = isBooking ? "#059669" : "#d97706";
+
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
-        <div style="background-color: #d97706; padding: 20px; text-align: center; color: #ffffff;">
-          <h2 style="margin: 0; font-size: 22px;">🚗 New Rust Check Contact Request</h2>
+        <div style="background-color: ${headerColor}; padding: 20px; text-align: center; color: #ffffff;">
+          <h2 style="margin: 0; font-size: 22px;">${headerTitle}</h2>
           <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Lead received from website form</p>
         </div>
         <div style="padding: 24px; color: #333333;">
@@ -85,7 +90,7 @@ export async function sendLeadNotificationEmail({ name, email, phone, formData, 
     const info = await transporter.sendMail({
       from: `Rust Check Newmarket Notifications <${senderEmail}>`,
       to: recipientEmail,
-      subject: `[New Lead] ${name} - ${type} (${trafficSource})`,
+      subject: `${subjectPrefix} ${name} - ${vehicleStr} (${trafficSource})`,
       html: htmlBody,
     });
 
