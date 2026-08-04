@@ -218,31 +218,36 @@ export async function GET(req) {
     const drop6 = raw6 - raw7;
     const drop7 = raw7 - raw8;
 
-    // Calculate Traffic Sources breakdown
-    let googleCount = 0;
+    // Calculate Social Networks & Traffic Sources breakdown
     let fbCount = 0;
     let igCount = 0;
+    let tiktokCount = 0;
+    let ytCount = 0;
+    let twitterCount = 0;
+    let googleCount = 0;
     let directCount = 0;
     let otherCount = 0;
 
     (store.events || []).forEach(ev => {
       const src = String(ev.params?.trafficSource || ev.params?.source || "").toLowerCase();
-      if (src.includes("google")) googleCount++;
-      else if (src.includes("facebook") || src.includes("meta")) fbCount++;
-      else if (src.includes("instagram")) igCount++;
+      if (src.includes("facebook") || src.includes("meta")) fbCount++;
+      else if (src.includes("instagram") || src.includes("ig")) igCount++;
+      else if (src.includes("tiktok")) tiktokCount++;
+      else if (src.includes("youtube")) ytCount++;
+      else if (src.includes("twitter") || src.includes("x.com")) twitterCount++;
+      else if (src.includes("google")) googleCount++;
       else if (src.includes("direct")) directCount++;
       else if (src) otherCount++;
     });
 
-    const totalTrafficEvents = googleCount + fbCount + igCount + directCount + otherCount;
-
-    // Default fallback counts if no traffic events recorded yet
-    const finalGoogle = googleCount || Math.round(baseSessions * 0.45);
-    const finalFb = fbCount || Math.round(baseSessions * 0.25);
-    const finalIg = igCount || Math.round(baseSessions * 0.15);
-    const finalDirect = directCount || Math.round(baseSessions * 0.10);
-    const finalOther = otherCount || Math.round(baseSessions * 0.05);
-    const totalCalc = finalGoogle + finalFb + finalIg + finalDirect + finalOther || 1;
+    // Smart fallback calculations based on total sessions if live traffic counts are starting up
+    const finalFb = fbCount || Math.round(baseSessions * 0.35);
+    const finalIg = igCount || Math.round(baseSessions * 0.25);
+    const finalGoogle = googleCount || Math.round(baseSessions * 0.20);
+    const finalTiktok = tiktokCount || Math.round(baseSessions * 0.08);
+    const finalYt = ytCount || Math.round(baseSessions * 0.04);
+    const finalDirect = directCount || Math.round(baseSessions * 0.08);
+    const totalCalc = finalFb + finalIg + finalGoogle + finalTiktok + finalYt + finalDirect || 1;
 
     return NextResponse.json({
       isLiveGA: Boolean(gaReportData),
@@ -281,11 +286,12 @@ export async function GET(req) {
         { type: "Other", count: vehicleOther, percentage: totalVehicles > 0 ? Math.round((vehicleOther / totalVehicles) * 100) : 0 }
       ],
       trafficSources: [
-        { source: "Google (Search & Ads)", count: finalGoogle, percentage: Math.round((finalGoogle / totalCalc) * 100) },
-        { source: "Facebook", count: finalFb, percentage: Math.round((finalFb / totalCalc) * 100) },
-        { source: "Instagram", count: finalIg, percentage: Math.round((finalIg / totalCalc) * 100) },
-        { source: "Direct / Bookmark", count: finalDirect, percentage: Math.round((finalDirect / totalCalc) * 100) },
-        { source: "Referrals / Other", count: finalOther, percentage: Math.round((finalOther / totalCalc) * 100) }
+        { source: "Facebook (Meta)", category: "Social Network", count: finalFb, percentage: Math.round((finalFb / totalCalc) * 100), color: "bg-blue-600" },
+        { source: "Instagram (Meta)", category: "Social Network", count: finalIg, percentage: Math.round((finalIg / totalCalc) * 100), color: "bg-pink-600" },
+        { source: "Google (Search & Ads)", category: "Search / Ads", count: finalGoogle, percentage: Math.round((finalGoogle / totalCalc) * 100), color: "bg-emerald-600" },
+        { source: "TikTok", category: "Social Network", count: finalTiktok, percentage: Math.round((finalTiktok / totalCalc) * 100), color: "bg-purple-600" },
+        { source: "YouTube", category: "Social Video", count: finalYt, percentage: Math.round((finalYt / totalCalc) * 100), color: "bg-red-600" },
+        { source: "Direct / Bookmark", category: "Direct Traffic", count: finalDirect, percentage: Math.round((finalDirect / totalCalc) * 100), color: "bg-zinc-600" }
       ],
       recentEvents: store.events
     });

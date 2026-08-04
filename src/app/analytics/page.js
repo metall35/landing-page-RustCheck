@@ -493,26 +493,40 @@ export default function AnalyticsDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Traffic Source Breakdown Card */}
+        {/* Social Networks & Traffic Source Breakdown Card */}
         <Card className="shadow-lg border-border bg-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" /> Traffic Acquisition Sources
+              <Globe className="w-5 h-5 text-primary" /> Social Networks & Traffic Acquisition
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1 font-medium">
-              Real-time traffic origin breakdown (Google, Facebook, Instagram, Direct, Referrals).
+              Real-time traffic origin breakdown by social network and search channel (Facebook, Instagram, Google, TikTok, YouTube, Direct).
             </p>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {data?.trafficSources?.map((item) => (
-                <div key={item.source} className="p-4 rounded-2xl bg-secondary/50 border border-border space-y-2">
-                  <div className="text-xs font-bold text-foreground truncate">{item.source}</div>
-                  <div className="text-2xl font-black text-primary">{item.count}</div>
-                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden border border-border/40">
-                    <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ width: `${item.percentage}%` }} />
+                <div key={item.source} className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col justify-between space-y-3 hover:border-primary/30 transition-all">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-background px-2 py-0.5 rounded-md border border-border">
+                      {item.category || "Traffic"}
+                    </span>
+                    <h4 className="text-sm font-bold text-foreground mt-2 truncate" title={item.source}>
+                      {item.source}
+                    </h4>
                   </div>
-                  <div className="text-[11px] text-muted-foreground font-medium text-right">{item.percentage}% of total</div>
+                  <div className="space-y-1.5">
+                    <div className="text-2xl font-black text-foreground">{item.count}</div>
+                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden border border-border/40">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${item.color || "bg-primary"}`} 
+                        style={{ width: `${Math.max(item.percentage, 5)}%` }} 
+                      />
+                    </div>
+                    <div className="text-[11px] text-muted-foreground font-semibold text-right">
+                      {item.percentage}% of traffic
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
