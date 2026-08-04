@@ -6,6 +6,8 @@ import { Lock, ChevronLeft } from "lucide-react";
 import ExitIntentModal from "@/components/form/ExitIntentModal";
 import { trackFormEvent, trackBeginCheckout, trackLead } from "@/lib/gtag";
 import toast from "react-hot-toast";
+import { pixel } from "@/lib/pixel";
+import { getTrafficSource } from "@/lib/trafficSource";
 
 import { STEP_NAMES, getMinBookingDate, getTimeSlotsForDate } from "./formUtils";
 import Step1VehicleType from "./steps/Step1VehicleType";
@@ -187,11 +189,12 @@ export default function MultiStepForm() {
 
     setIsSubmitting(true);
     try {
+      const trafficSource = getTrafficSource();
       const endpoint = isJustLooking ? "/api/lead" : "/api/schedule";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...bookingData, formData })
+        body: JSON.stringify({ ...bookingData, formData, trafficSource })
       });
 
       const data = await res.json();
@@ -219,6 +222,12 @@ export default function MultiStepForm() {
             vehicle_type: formData.vehicleType,
             vehicle: `${formData.make} ${formData.model}`
           });
+
+          // Meta Pixel Event 3: Schedule
+          const vType = (formData.vehicleType || "").toLowerCase();
+          const price = vType === "sedan" ? 149.95 : vType === "suv" ? 169.95 : vType === "pickup" ? 189.95 : 149.95;
+          pixel.schedule(formData.vehicleType || "Vehicle", price);
+
           toast.success("Appointment successfully scheduled!");
         }
         setStep(8);

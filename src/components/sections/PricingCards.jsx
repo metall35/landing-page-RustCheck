@@ -1,16 +1,35 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Car, Award } from "lucide-react";
 import Image from "next/image";
 import { trackCTA } from "@/lib/gtag";
+import { pixel } from "@/lib/pixel";
 
 export default function PricingCards() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          pixel.viewContent();
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
   const cards = [
     {
       type: "Sedan",
-      price: "$129.95",
-      originalPrice: "$149.95",
+      price: "$149.95",
+      value: 149.95,
       popular: false,
       icon: Car,
       image: "/civic.png",
@@ -27,8 +46,8 @@ export default function PricingCards() {
     },
     {
       type: "SUV",
-      price: "$149.95",
-      originalPrice: "$169.95",
+      price: "$169.95",
+      value: 169.95,
       popular: true,
       icon: Car,
       image: "/rav4.png",
@@ -45,8 +64,8 @@ export default function PricingCards() {
     },
     {
       type: "Pickup",
-      price: "$169.95",
-      originalPrice: "$189.95",
+      price: "$189.95",
+      value: 189.95,
       popular: false,
       icon: Car,
       image: "/f150.png",
@@ -63,11 +82,14 @@ export default function PricingCards() {
     }
   ];
 
-  const handleSelectVehicle = (type) => {
-    trackCTA(`select_pricing_card_${type.toLowerCase()}`, "pricing_cards");
+  const handleSelectVehicle = (card) => {
+    trackCTA(`select_pricing_card_${card.type.toLowerCase()}`, "pricing_cards");
     
+    // Meta Pixel Event 2: InitiateCheckout with vehicle type & value
+    pixel.initiateCheckout(card.type, card.value);
+
     // Map 'Truck' card to 'pickup' option in the form
-    const formType = type.toLowerCase() === "truck" ? "pickup" : type.toLowerCase();
+    const formType = card.type.toLowerCase() === "truck" ? "pickup" : card.type.toLowerCase();
     
     // Dispatch custom event to select the vehicle in the form and auto-advance to step 2
     window.dispatchEvent(new CustomEvent("select-vehicle", { detail: { type: formType } }));
@@ -77,7 +99,7 @@ export default function PricingCards() {
   };
 
   return (
-    <section className="py-20 bg-muted/10 relative overflow-hidden" id="pricing">
+    <section ref={sectionRef} className="py-20 bg-muted/10 relative overflow-hidden" id="pricing">
       {/* Decorative gradients */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -90,7 +112,7 @@ export default function PricingCards() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase mb-4 border border-primary/20">
-            <Award className="w-3.5 h-3.5" /> Special Promotion
+            <Award className="w-3.5 h-3.5" /> Total Protection
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">Total Rust Protection Prices</h2>
           <p className="text-lg text-muted-foreground">
@@ -120,7 +142,7 @@ export default function PricingCards() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
                   
                   {/* Sticker-styled price overlay */}
-                  <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground font-black text-xl py-1.5 px-4 rounded-xl shadow-lg border border-white/20 select-none animate-pulse-slow">
+                  <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground font-black text-xl py-1.5 px-4 rounded-xl shadow-lg border border-white/20 select-none">
                     {card.price}
                   </div>
                 </div>
@@ -131,10 +153,7 @@ export default function PricingCards() {
                   </span>
                   
                   <div className="mt-4 flex items-baseline gap-2">
-                    <span className="text-sm text-muted-foreground line-through font-medium">{card.originalPrice}</span>
-                    <span className="text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-md border border-green-500/25">
-                      Save $20
-                    </span>
+                    <span className="text-xl font-extrabold text-foreground">{card.price}</span>
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1">One-time annual application fee</p>
                 </div>
@@ -153,7 +172,7 @@ export default function PricingCards() {
 
                 <div className="p-6 pt-0">
                   <button 
-                    onClick={() => handleSelectVehicle(card.type)}
+                    onClick={() => handleSelectVehicle(card)}
                     className="w-full py-3 bg-secondary text-foreground hover:bg-primary hover:text-primary-foreground border border-border hover:border-primary rounded-xl font-bold transition-all duration-200 text-center text-sm"
                   >
                     Select {card.type} & Check In

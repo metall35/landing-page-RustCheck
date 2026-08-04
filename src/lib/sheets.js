@@ -28,7 +28,7 @@ async function getGoogleAuthClient() {
   return null;
 }
 
-export async function appendToGoogleSheet({ name, email, phone, date = null, time = null, formData, type = "Lead" }) {
+export async function appendToGoogleSheet({ name, email, phone, date = null, time = null, formData, type = "Lead", status = "Pending", trafficSource = "Direct" }) {
   try {
     const auth = await getGoogleAuthClient();
     if (!auth) {
@@ -52,14 +52,16 @@ export async function appendToGoogleSheet({ name, email, phone, date = null, tim
       formData?.duration || "N/A",
       formData?.rustCondition || "N/A",
       formData?.previousProtection || "N/A",
-      formData?.timeframe || type
+      formData?.timeframe || type,
+      status || "Pending",
+      trafficSource || "Direct"
     ];
 
     const sheets = google.sheets({ version: "v4", auth });
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: "A1:N1",
+      range: "A1:P1",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [rowValues]

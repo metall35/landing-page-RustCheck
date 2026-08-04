@@ -49,7 +49,9 @@ export default function Step8Confirmation({
           <div><strong>Scheduled Date & Time:</strong> {bookingData.date} at {formatSlotLabel(bookingData.time)}</div>
         )}
         <div><strong>Contact:</strong> {bookingData.name} ({bookingData.email})</div>
-        <div><strong>Status:</strong> {isJustLooking ? "Saved in Google Sheets" : "Synced with Google Calendar (24h & 3h Reminders Set)"}</div>
+        {!isJustLooking && (
+          <div><strong>Status:</strong> Synced with Google Calendar (24h & 3h Reminders Set)</div>
+        )}
       </div>
 
       <Button

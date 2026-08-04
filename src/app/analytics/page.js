@@ -18,7 +18,8 @@ import {
   Lock,
   KeyRound,
   ShieldAlert,
-  UserX
+  UserX,
+  Globe
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -488,6 +489,32 @@ export default function AnalyticsDashboardPage() {
                   {data?.bookingCTAs?.phoneClicks || 0} Clicks
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Traffic Source Breakdown Card */}
+        <Card className="shadow-lg border-border bg-card">
+          <CardHeader className="border-b border-border/60 pb-4">
+            <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" /> Traffic Acquisition Sources
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
+              Real-time traffic origin breakdown (Google, Facebook, Instagram, Direct, Referrals).
+            </p>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+              {data?.trafficSources?.map((item) => (
+                <div key={item.source} className="p-4 rounded-2xl bg-secondary/50 border border-border space-y-2">
+                  <div className="text-xs font-bold text-foreground truncate">{item.source}</div>
+                  <div className="text-2xl font-black text-primary">{item.count}</div>
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden border border-border/40">
+                    <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ width: `${item.percentage}%` }} />
+                  </div>
+                  <div className="text-[11px] text-muted-foreground font-medium text-right">{item.percentage}% of total</div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

@@ -3,6 +3,7 @@
 import { ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { trackCTA, trackLocationClick } from "@/lib/gtag";
+import { pixel } from "@/lib/pixel";
 
 export default function HeroSection() {
 
@@ -77,6 +78,7 @@ export default function HeroSection() {
               <button 
                 onClick={() => {
                   trackCTA("set_appointment_hero", "hero_section");
+                  pixel.initiateCheckout();
                   document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary/95 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 text-center"

@@ -3,6 +3,7 @@ import { google } from "googleapis";
 import fs from "fs";
 import path from "path";
 import { appendToGoogleSheet } from "@/lib/sheets";
+import { sendLeadNotificationEmail } from "@/lib/mailer";
 
 // Helper function to get authorized Google Calendar client
 async function getGoogleCalendarClient() {
@@ -164,7 +165,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, email, phone, date, time, formData } = body;
+    const { name, email, phone, date, time, formData, trafficSource = "Direct" } = body;
 
     if (!name || !email || !date || !time) {
       return NextResponse.json(
@@ -310,7 +311,19 @@ Scheduled via Rust Check Online Form.
       date,
       time,
       formData,
-      type: "Appointment Booking"
+      type: "Appointment Booking",
+      status: "Pending",
+      trafficSource
+    });
+
+    // Send internal notification email to administrator email
+    await sendLeadNotificationEmail({
+      name,
+      email,
+      phone,
+      formData,
+      type: "Appointment Booking",
+      trafficSource
     });
 
     return NextResponse.json({

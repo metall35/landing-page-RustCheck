@@ -25,7 +25,7 @@ export default function Footer() {
 
         <div className="pt-6 border-t border-border/80 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground text-center md:text-left">
-            &copy; {currentYear} Rust Check Protection Plan. All rights reserved.
+            &copy; {currentYear} Rust Check Protection Plan. All rights reserved. &bull; powered by Action Imaging
           </p>
           <div className="flex space-x-4">
             <span className="text-xs text-muted-foreground font-semibold">Safe, Secure, and Confidential</span>

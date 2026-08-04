@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Copy, Check } from "lucide-react";
 import { trackPhoneClick, trackEvent } from "@/lib/gtag";
+import { pixel } from "@/lib/pixel";
 
 export default function ContactLocation() {
   const [copied, setCopied] = useState(false);
@@ -98,7 +99,10 @@ export default function ContactLocation() {
               {/* Phone card */}
               <a 
                 href="tel:9058533510"
-                onClick={() => trackPhoneClick("9058533510", "contact_section")}
+                onClick={() => {
+                  trackPhoneClick("9058533510", "contact_section");
+                  pixel.contact("Phone Call");
+                }}
                 className="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between shadow-sm hover:shadow-md hover:border-primary/30 transition-all group"
               >
                 <div className="flex items-start gap-4">
@@ -118,7 +122,10 @@ export default function ContactLocation() {
               {/* Email card */}
               <a 
                 href="mailto:sales@rustchecknewmarket.ca"
-                onClick={() => trackEvent("contact_email_click", { event_category: "Conversion", email: "sales@rustchecknewmarket.ca" })}
+                onClick={() => {
+                  trackEvent("contact_email_click", { event_category: "Conversion", email: "sales@rustchecknewmarket.ca" });
+                  pixel.contact("Email");
+                }}
                 className="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between shadow-sm hover:shadow-md hover:border-primary/30 transition-all group col-span-1 sm:col-span-2"
               >
                 <div className="flex items-start gap-4">

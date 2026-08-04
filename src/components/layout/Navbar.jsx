@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { trackCTA, trackPhoneClick, trackLocationClick } from "@/lib/gtag";
+import { pixel } from "@/lib/pixel";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -28,7 +29,13 @@ export default function Navbar() {
 
   const handleBookNow = (location = "desktop_navbar") => {
     trackCTA("book_now", location);
+    pixel.initiateCheckout();
     document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handlePhoneClick = (location) => {
+    trackPhoneClick("9058533510", location);
+    pixel.contact("Phone Call");
   };
 
   return (
@@ -62,7 +69,7 @@ export default function Navbar() {
 
           <a 
             href="tel:9058533510" 
-            onClick={() => trackPhoneClick("9058533510", "desktop_navbar")}
+            onClick={() => handlePhoneClick("desktop_navbar")}
             className="flex items-center gap-2 text-md font-bold text-foreground/90 hover:text-primary transition-all duration-300 hover:scale-102"
           >
             <Phone className="w-4 h-4 text-primary animate-pulse" />
@@ -96,7 +103,7 @@ export default function Navbar() {
         <div className="flex items-center md:hidden space-x-1">
           <a 
             href="tel:9058533510" 
-            onClick={() => trackPhoneClick("9058533510", "mobile_navbar")}
+            onClick={() => handlePhoneClick("mobile_navbar")}
             className="p-2 text-foreground/80 hover:text-primary transition-colors"
             title="Call Us"
           >
