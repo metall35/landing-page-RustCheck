@@ -56,7 +56,7 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
+      <body className="min-h-full flex flex-col font-inter">
         {/* Meta Pixel */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
@@ -81,8 +81,6 @@ export default function RootLayout({ children }) {
             alt=""
           />
         </noscript>
-      </head>
-      <body className="min-h-full flex flex-col font-inter">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
