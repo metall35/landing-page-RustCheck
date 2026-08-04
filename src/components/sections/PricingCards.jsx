@@ -41,7 +41,6 @@ export default function PricingCards() {
         "Electrical Terminals Shield",
         "Wheel Wells Protection",
         "Underside of trunk lid",
-        "Lifetime Warranty Policy"
       ]
     },
     {
@@ -59,7 +58,6 @@ export default function PricingCards() {
         "Electrical Terminals Shield",
         "Wheel Wells Protection",
         "Rear hatch",
-        "Lifetime Warranty Policy"
       ]
     },
     {
@@ -77,7 +75,6 @@ export default function PricingCards() {
         "Electrical Terminals Shield",
         "Wheel Wells Protection",
         "Tailgate & Bed Junctions",
-        "Lifetime Warranty Policy"
       ]
     }
   ];
