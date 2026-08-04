@@ -13,28 +13,28 @@ export default function PreventionCarousel() {
       title: "Undercarriage & Structural Frame",
       description: "Road salt, moisture, and chemical brines accumulate on your vehicle's frame. Without protection, structural steel weakens, posing major safety hazards and destroying resale value.",
       prevention: "Rust Check penetrates deep into frame joints and subframes to stop structural steel decay and underbody rot.",
-      image: "/corroded_undercarriage.jpg",
+      image: "/Sequence 03.00_00_57_00.Still007.jpg",
       untreatedLabel: "Untreated: Severe Frame & Suspension Corrosion"
     },
     {
       title: "Rocker Panels & Door Seams",
       description: "Moisture traps inside doors, tailgates, and rocker panels. Water pools at bottom seams, causing paint bubbling and rust-through from the inside out before you even notice it.",
       prevention: "Rust Check displaces hidden moisture and seals seams to prevent panel rust-through and paint bubbling.",
-      image: "/corroded_doors.jpg",
+      image: "/Sequence 03.00_03_08_27.Still014.jpg",
       untreatedLabel: "Untreated: Paint Bubbling & Body Rust-Through"
     },
     {
       title: "Fender & Wheel Arch Degradation",
       description: "Debris and road spray chip away protective factory paint around wheel wells, exposing raw sheet metal to rapid oxidation and metal flaking.",
       prevention: "Rust Check creates an active barrier around wheel arches and exposed body edges to stop corrosion spread.",
-      image: "/corroded_fender.png",
+      image: "/Sequence 04.00_04_03_59.Still015.jpg",
       untreatedLabel: "Untreated: Wheel Arch & Sheet Metal Flaking"
     },
     {
-      title: "Underbody & Exhaust Components",
+      title: "Underbody & High-Impact Components",
       description: "High operating temperatures mixed with road salt accelerate rust formation on exhaust systems, suspension arms, and rear axle components.",
       prevention: "Rust Check protects high-stress underbody parts and mechanical assemblies from harsh winter corrosion.",
-      image: "/corroded_exhaust.jpg",
+      image: "/action camera mazda .00_04_11_27.Still007.jpg",
       untreatedLabel: "Untreated: Exhaust & Undercarriage Oxidation"
     }
   ];
