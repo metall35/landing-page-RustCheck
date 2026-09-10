@@ -2,19 +2,20 @@
 // API routes can validate against the exact same definitions the UI renders,
 // without pulling client-only imports into the server bundle.
 
-// "hourly": the full 9 AM - 5 PM workday as eight one-hour blocks. Anything that
-//   should not be bookable is blocked manually in Google Calendar.
-// "fixed":  only the four core slots (9, 11, 1, 3).
+// "hourly": every open block of the working day. Anything that should not be
+//   bookable is blocked manually in Google Calendar.
+// "fixed":  only the four core slots (8, 10, 1, 3).
 export const SLOT_MODE = process.env.NEXT_PUBLIC_SLOT_MODE || "hourly";
 
 export const SLOT_DURATION_MINUTES = 60;
 
-const WEEKDAY_SLOTS_FIXED = ["09:00", "11:00", "13:00", "15:00"];
+// Mon-Fri: 8, 9, 10, 11, 1, 2, 3, 4. Noon is deliberately absent (lunch).
 const WEEKDAY_SLOTS_HOURLY = [
-  "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"
+  "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"
 ];
-// Saturday stays reduced regardless of mode.
-const SATURDAY_SLOTS = ["09:00", "13:00"];
+const WEEKDAY_SLOTS_FIXED = ["08:00", "10:00", "13:00", "15:00"];
+// Saturday is mornings only: 8, 9, 10, 11.
+const SATURDAY_SLOTS = ["08:00", "09:00", "10:00", "11:00"];
 
 // Day of week for a YYYY-MM-DD string, read as a calendar date (no timezone shift).
 export function getDayOfWeek(dateStr) {
