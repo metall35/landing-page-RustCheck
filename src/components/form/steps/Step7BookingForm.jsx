@@ -1,8 +1,20 @@
 "use client";
 
-import { Calendar, Clock, Phone, User, Mail, AlertTriangle, Loader2, Send, CalendarCheck } from "lucide-react";
+import { Calendar, Clock, Phone, User, Mail, AlertTriangle, Loader2, Send, CalendarCheck, CalendarX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatSlotLabel } from "../formUtils";
+
+// "2026-09-01" -> "Tue, Sep 1". Parsed as a plain calendar date so the label
+// never drifts a day for users behind UTC.
+function formatDateChip(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-CA", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC"
+  });
+}
 
 export default function Step7BookingForm({
   bookingData,
@@ -12,12 +24,19 @@ export default function Step7BookingForm({
   availableTimeSlots,
   isSunday,
   bookedSlots,
+  dayBlocked,
+  nextAvailableDates = [],
   checkingAvailability,
   emailAlreadyBooked,
   isSubmitting,
   onSubmit,
   onRequestCall
 }) {
+  // Blocked in Google Calendar (all-day event or every slot taken), as opposed
+  // to the fixed Sunday closure which has its own message.
+  const blockedByCalendar = dayBlocked && !isSunday;
+  const slotSelectDisabled = isSunday || blockedByCalendar || availableTimeSlots.length === 0;
+
   return (
     <form onSubmit={onSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
       {/* Date & Time Selection (Hidden if "We Contact You") */}
@@ -51,11 +70,13 @@ export default function Step7BookingForm({
                   value={bookingData.time}
                   onChange={(e) => updateBooking("time", e.target.value)}
                   required
-                  disabled={isSunday || availableTimeSlots.length === 0}
+                  disabled={slotSelectDisabled}
                   className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors bg-background appearance-none disabled:opacity-50"
                 >
                   {isSunday ? (
                     <option value="">Closed on Sundays</option>
+                  ) : blockedByCalendar ? (
+                    <option value="">No times available</option>
                   ) : (
                     availableTimeSlots.map((t) => {
                       const isBooked = bookedSlots.includes(t);
@@ -76,6 +97,37 @@ export default function Step7BookingForm({
             <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-500 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>We are closed on Sundays. Please select a date from Monday to Saturday.</span>
+            </div>
+          )}
+
+          {/* Day blocked in the calendar: say so up front and offer the next
+              dates that are actually open. */}
+          {blockedByCalendar && (
+            <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-2.5 animate-in fade-in">
+              <div className="flex items-center gap-2 text-xs text-amber-500">
+                <CalendarX className="w-4 h-4 shrink-0" />
+                <span className="font-semibold">
+                  This date is fully booked or unavailable. Please choose another day.
+                </span>
+              </div>
+
+              {nextAvailableDates.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground mr-0.5">
+                    Next available:
+                  </span>
+                  {nextAvailableDates.map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => updateBooking("date", d)}
+                      className="px-2.5 py-1 rounded-lg border border-primary/40 bg-background text-[11px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                    >
+                      {formatDateChip(d)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -168,7 +220,7 @@ export default function Step7BookingForm({
 
       <Button
         type="submit"
-        disabled={isSubmitting || (!isJustLooking && (isSunday || emailAlreadyBooked || bookedSlots.includes(bookingData.time)))}
+        disabled={isSubmitting || (!isJustLooking && (isSunday || blockedByCalendar || emailAlreadyBooked || bookedSlots.includes(bookingData.time)))}
         size="lg"
         className="w-full text-lg font-bold py-6 mt-4 group"
       >

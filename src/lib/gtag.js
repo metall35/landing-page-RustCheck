@@ -1,3 +1,5 @@
+import { getTrafficSource } from "@/lib/trafficSource";
+
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/pages
@@ -11,35 +13,46 @@ export const pageview = (url) => {
 
 // Generic GA event dispatching & Realtime Local Telemetry Sync
 export const trackEvent = (action, params = {}) => {
-  if (typeof window !== "undefined") {
-    if (window.gtag) {
-      window.gtag("event", action, params);
-    }
-    // Also post to local real-time telemetry store for instantaneous dashboard rendering
-    fetch("/api/analytics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, params })
-    }).catch(() => {});
+  if (typeof window === "undefined") return;
+
+  // Attribution travelled only in the booking POST body, so every analytics
+  // event arrived without a source and the dashboard's traffic breakdown had
+  // nothing real to count.
+  const enriched = { traffic_source: getTrafficSource(), ...params };
+
+  if (window.gtag) {
+    window.gtag("event", action, enriched);
   }
+
+  // Also post to local real-time telemetry store for instantaneous dashboard rendering
+  fetch("/api/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, params: enriched })
+  }).catch(() => {});
 };
 
 // Form Progression event tracker
 export const trackFormEvent = (action, params = {}) => {
+  // A step view emits exactly one event: form_step_<n>. It used to emit both a
+  // generic `form_step_view` and the numbered event, and since the backend
+  // matched either name, every step was counted twice in GA4 and locally.
+  if (action === "form_step_view" && params.step_number) {
+    trackEvent(`form_step_${params.step_number}`, {
+      event_category: "Form Progression",
+      step_number: params.step_number,
+      step_name: params.step_name || `Step ${params.step_number}`
+    });
+    return;
+  }
+
   trackEvent(action, {
     event_category: "Form Progression",
     ...params,
   });
 
-  if (action === "form_step_view" && params.step_number) {
-    trackEvent(`form_step_${params.step_number}`, {
-      event_category: "Form Progression",
-      step_name: params.step_name || `Step ${params.step_number}`
-    });
-  }
-
   if (action === "booking_submit_success" || action === "lead_submit_success") {
-    trackEvent("form_step_8", { event_category: "Form Progression" });
+    trackEvent("form_step_8", { event_category: "Form Progression", step_number: 8 });
     if (params.vehicle_type) {
       const vType = String(params.vehicle_type).toLowerCase();
       trackEvent(`vehicle_completed_${vType}`, {
