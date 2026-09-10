@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, Clock } from "lucide-react";
+import { CalendarCheck, Clock, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatSlotLabel } from "../formUtils";
 
@@ -38,6 +38,26 @@ export default function Step8Confirmation({
           </p>
           <p className="text-[11px] text-amber-500 font-semibold italic border-t border-amber-500/20 pt-1.5">
             * Please note: Unconfirmed appointments will be automatically cancelled.
+          </p>
+        </div>
+      )}
+
+      {/* How to reschedule */}
+      {!isJustLooking && (
+        <div className="p-4 bg-secondary/50 border border-border rounded-2xl text-left space-y-2 max-w-sm mx-auto shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-foreground text-xs">
+            <CalendarClock className="w-4 h-4 shrink-0 text-primary" />
+            <span>Need to reschedule?</span>
+          </div>
+          <p className="text-xs text-foreground/90 leading-relaxed font-medium">
+            If you need to reschedule the appointment, please{" "}
+            <a
+              href="tel:9058533510"
+              className="text-primary font-bold hover:underline whitespace-nowrap"
+            >
+              call us at 905-853-3510
+            </a>{" "}
+            or cancel your booking in Google Calendar and make a new reservation.
           </p>
         </div>
       )}

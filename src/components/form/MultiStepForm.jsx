@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, ChevronLeft } from "lucide-react";
 import ExitIntentModal from "@/components/form/ExitIntentModal";
 import { trackFormEvent, trackBeginCheckout, trackLead } from "@/lib/gtag";
 import toast from "react-hot-toast";
-import { pixel } from "@/lib/pixel";
+import { pixel, getVehicleValue, createEventId } from "@/lib/pixel";
 import { getTrafficSource } from "@/lib/trafficSource";
 
 import { STEP_NAMES, getMinBookingDate, getTimeSlotsForDate } from "./formUtils";
+import { toDateStr } from "@/lib/slots";
 import Step1VehicleType from "./steps/Step1VehicleType";
 import Step2CarSelect from "./steps/Step2CarSelect";
 import Step3Duration from "./steps/Step3Duration";
@@ -45,6 +46,8 @@ export default function MultiStepForm() {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [emailAlreadyBooked, setEmailAlreadyBooked] = useState(false);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [dayBlocked, setDayBlocked] = useState(false);
+  const [blockedDays, setBlockedDays] = useState([]);
 
   const isJustLooking = formData.timeframe === "looking";
   const availableTimeSlots = getTimeSlotsForDate(bookingData.date);
@@ -77,6 +80,7 @@ export default function MultiStepForm() {
       .then((data) => {
         if (!isMounted) return;
         setBookedSlots(data.bookedSlots || []);
+        setDayBlocked(Boolean(data.dayBlocked));
         setEmailAlreadyBooked(Boolean(data.emailAlreadyBooked));
       })
       .catch((err) => console.error("Error checking availability:", err))
@@ -88,6 +92,49 @@ export default function MultiStepForm() {
       isMounted = false;
     };
   }, [step, bookingData.date, bookingData.email, isJustLooking]);
+
+  // Blocked days for the visible month (and the next one, so the suggestions
+  // below still work at the end of a month). Lets the picker warn about a
+  // closed day instead of letting the user find out after submitting.
+  const selectedMonth = bookingData.date ? bookingData.date.slice(0, 7) : "";
+
+  useEffect(() => {
+    if (step !== 7 || isJustLooking || !selectedMonth) return;
+
+    const [year, month] = selectedMonth.split("-").map(Number);
+    const following = month === 12
+      ? `${year + 1}-01`
+      : `${year}-${String(month + 1).padStart(2, "0")}`;
+
+    let isMounted = true;
+    Promise.all(
+      [selectedMonth, following].map(m =>
+        fetch(`/api/schedule?month=${m}`).then(res => res.json()).catch(() => ({}))
+      )
+    ).then(results => {
+      if (!isMounted) return;
+      setBlockedDays(results.flatMap(r => r.blockedDays || []));
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [step, selectedMonth, isJustLooking]);
+
+  const nextAvailableDates = useMemo(() => {
+    const suggestions = [];
+    const start = new Date(`${minDateStr}T00:00:00`);
+    for (let i = 0; i < 60 && suggestions.length < 3; i++) {
+      const candidate = new Date(start);
+      candidate.setDate(start.getDate() + i);
+      const dateStr = toDateStr(candidate);
+      if (dateStr === bookingData.date) continue;
+      if (candidate.getDay() === 0) continue;
+      if (blockedDays.includes(dateStr)) continue;
+      suggestions.push(dateStr);
+    }
+    return suggestions;
+  }, [blockedDays, minDateStr, bookingData.date]);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -187,14 +234,24 @@ export default function MultiStepForm() {
       return;
     }
 
+    if (!isJustLooking && dayBlocked) {
+      toast.error("That day is not available. Please choose another date.");
+      return;
+    }
+
     setIsSubmitting(true);
+    // Shared between the browser pixel and the server-side Conversions API so
+    // Meta counts one conversion instead of two (or zero, when the browser
+    // event is blocked).
+    const metaEventId = createEventId();
+
     try {
       const trafficSource = getTrafficSource();
       const endpoint = isJustLooking ? "/api/lead" : "/api/schedule";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...bookingData, formData, trafficSource })
+        body: JSON.stringify({ ...bookingData, formData, trafficSource, eventId: metaEventId })
       });
 
       const data = await res.json();
@@ -208,6 +265,15 @@ export default function MultiStepForm() {
             vehicle_type: formData.vehicleType,
             vehicle: `${formData.make} ${formData.model}`
           });
+
+          // Meta Pixel: a call-back request is a Lead too.
+          pixel.lead(
+            formData.vehicleType || "Vehicle",
+            getVehicleValue(formData.vehicleType),
+            metaEventId,
+            "call_back_request"
+          );
+
           toast.success("Thank you! We will contact you soon.");
         } else {
           trackFormEvent("booking_submit_success", {
@@ -223,10 +289,11 @@ export default function MultiStepForm() {
             vehicle: `${formData.make} ${formData.model}`
           });
 
-          // Meta Pixel Event 3: Schedule
-          const vType = (formData.vehicleType || "").toLowerCase();
-          const price = vType === "sedan" ? 149.95 : vType === "suv" ? 169.95 : vType === "pickup" ? 189.95 : 149.95;
-          pixel.schedule(formData.vehicleType || "Vehicle", price);
+          // Meta Pixel: Lead is what the ad campaigns optimise for; Schedule
+          // keeps the booking-specific signal. Both are mirrored server-side.
+          const price = getVehicleValue(formData.vehicleType);
+          pixel.lead(formData.vehicleType || "Vehicle", price, metaEventId, "appointment_booking");
+          pixel.schedule(formData.vehicleType || "Vehicle", price, metaEventId);
 
           toast.success("Appointment successfully scheduled!");
         }
@@ -301,6 +368,8 @@ export default function MultiStepForm() {
             availableTimeSlots={availableTimeSlots}
             isSunday={isSunday}
             bookedSlots={bookedSlots}
+            dayBlocked={dayBlocked}
+            nextAvailableDates={nextAvailableDates}
             checkingAvailability={checkingAvailability}
             emailAlreadyBooked={emailAlreadyBooked}
             isSubmitting={isSubmitting}

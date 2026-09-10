@@ -11,33 +11,16 @@ export const STEP_NAMES = [
   "Confirmation"
 ];
 
-// Helper: Calculate earliest allowed date (at least 2 days / 48h buffer, skipping Sundays)
-export function getMinBookingDate() {
-  const today = new Date();
-  const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 2);
-  if (minDate.getDay() === 0) {
-    minDate.setDate(minDate.getDate() + 1);
-  }
-  return minDate.toISOString().split("T")[0];
-}
-
-// Helper: Get available time slots by day of week
-export function getTimeSlotsForDate(dateStr) {
-  if (!dateStr) return [];
-  const d = new Date(`${dateStr}T00:00:00`);
-  const day = d.getDay();
-  if (day === 0) return []; // Sunday: OFF
-  if (day === 6) return ["09:00", "13:00"]; // Saturday: 9 AM, 1 PM
-  return ["09:00", "13:00", "16:00"]; // Mon - Fri: 9 AM, 1 PM, 4 PM
-}
-
-export function formatSlotLabel(t) {
-  if (t === "09:00") return "9:00 AM";
-  if (t === "13:00") return "1:00 PM";
-  if (t === "16:00") return "4:00 PM";
-  return t;
-}
+// Slot definitions, min-date logic and label formatting live in @/lib/slots so the
+// API routes validate against exactly what the UI offers. Re-exported here to keep
+// the existing import sites working.
+export {
+  getMinBookingDate,
+  getTimeSlotsForDate,
+  formatSlotLabel,
+  isSundayDate,
+  SLOT_MODE
+} from "@/lib/slots";
 
 export const vehicleTypes = [
   { id: "sedan", label: "Sedan", iconSrc: "/sedan.svg", iconClass: "w-14 h-14" },
